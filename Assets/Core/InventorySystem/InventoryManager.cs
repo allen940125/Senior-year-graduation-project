@@ -1,0 +1,411 @@
+using System;
+using System.Collections.Generic;
+using Datamanager;
+using Gamemanager;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+
+public class InventoryManager : Singleton<InventoryManager>
+{
+    public static InventoryPanelController InventoryPanelController { get; private set; }
+
+    [Header("物品、角色資料")]
+    public InventoryItemRuntimeData curClickInventoryItemRuntimeData;
+    public InventoryItemRuntimeData PlayerMoney => GetInventoryData(100);
+
+    [Header("玩家背包資料")]
+    public ItemControllerType curCategoryTypeName;
+
+    public int initializeMoney;
+
+    // 直接從 SaveManager 獲取背包數據
+    private InventoryRuntimeData CurrentInventory => SaveManager.Instance.CurrentSaveData.InventoryData;
+    
+    protected override void Awake()
+    {
+        base.Awake(); // 先執行 Singleton 的檢查
+
+        // 如果當前物件已被標記銷毀，直接返回
+        if (_instance != this) return;
+
+        InitializeManagers();
+        SubscribeToEvents();
+    }
+
+    private void OnDestroy()
+    {
+        // ★ 絕對防禦：如果我不是真正的單例（代表我是被銷毀的複製人），我不准執行全域清理！
+        if (_instance != this) return;
+        
+        InventoryPanelController?.Dispose(); // 手動觸發清理
+        UnsubscribeFromEvents();
+    }
+
+    void Start()
+    {
+        PrintInventory();
+    }
+
+    #region 初始化
+    
+    private void SubscribeToEvents()
+    {
+        GameManager.Instance.MainGameEvent.SetSubscribe(GameManager.Instance.MainGameEvent.OnItemAddedToBagEvent, OnItemAddedToBagEvent);
+        GameManager.Instance.MainGameEvent.SetSubscribe(GameManager.Instance.MainGameEvent.OnInventoryItemClickedEvent, OnInventoryItemClickedEvent);
+        
+        // ★ 新增：監聽戰鬥開始事件
+        GameManager.Instance.MainGameEvent.SetSubscribe(GameManager.Instance.MainGameEvent.OnBattleInitiatedEvent, OnBattleInitiated);
+    }
+
+    private void UnsubscribeFromEvents()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.MainGameEvent != null)
+        {
+            GameManager.Instance.MainGameEvent.Unsubscribe<ItemAddedToBagEvent>(OnItemAddedToBagEvent);
+            GameManager.Instance.MainGameEvent.Unsubscribe<InventoryItemClickedEvent>(OnInventoryItemClickedEvent);
+            
+            GameManager.Instance.MainGameEvent.Unsubscribe<BattleInitiatedEvent>(OnBattleInitiated);
+        }
+    }
+    
+    /// <summary>
+    /// 初始化分支管理器
+    /// </summary>
+    private void InitializeManagers()
+    {
+        InventoryPanelController = new InventoryPanelController();
+    }
+    
+    #endregion
+    
+    
+    #region 事件訂閱
+
+    private void OnItemAddedToBagEvent(ItemAddedToBagEvent cmd)
+    {
+        AddItem(cmd.ItemID, cmd.Quantity);
+        GameManager.Instance.MainGameEvent.Send(new PlayerBagRefreshedEvent() { ItemControllerType = ItemControllerType.All });
+    }
+
+    private void OnInventoryItemClickedEvent(InventoryItemClickedEvent cmd)
+    {
+        SetCurrentSelectedItem(cmd.StoredInventoryItemRuntimeData);
+    }
+
+    
+    #endregion
+    
+    private void Update()
+    {
+        #region 測試用
+        
+        if (Keyboard.current != null && Keyboard.current.oKey.wasPressedThisFrame)
+        {
+            Debug.Log("鍵盤上的 O 鍵被按下了 (Was Pressed This Frame)！");
+            AddItem(3001, initializeMoney);
+            AddItem(2001, 1);  // 測試加入 120 個 ID 為 101 的物品
+            AddItem(2002, 1);   // 測試加入 50 個 ID 為 102 的物品
+            PrintInventory();
+        }
+        
+        #endregion
+    }
+
+    /// <summary>
+    /// 設置當前選擇物品
+    /// </summary>
+    /// <param name="slotInventoryItemRuntime"></param>
+    private void SetCurrentSelectedItem(InventoryItemRuntimeData slotInventoryItemRuntime)//更新物品資訊
+    {
+        curClickInventoryItemRuntimeData = slotInventoryItemRuntime;
+    }
+    
+    /// <summary>
+    /// 取得背包內的物品數據
+    /// </summary>
+    public InventoryItemRuntimeData GetInventoryData(int itemId)
+    {
+        ItemControllerType itemType = GameContainer.Get<DataManager>().GetDataByID<ItemDataBaseTemplete>(itemId).ItemControllerType;
+        
+        foreach (var category in CurrentInventory.categoryGroups)
+        {
+            if (category.categoryName == itemType)
+            {
+                return category.items.Find(item => item.itemId == itemId);
+            }
+        }
+
+        if (itemId == 100)
+        {
+            InventoryItemRuntimeData inventoryItemRuntimeData = new InventoryItemRuntimeData();
+            inventoryItemRuntimeData.itemId = itemId;
+            inventoryItemRuntimeData.quantity = 0;
+            return inventoryItemRuntimeData;
+        }
+        
+        return null; // 找不到物品
+    }
+
+    /// <summary>
+    /// 新增物品到背包（依照分類）
+    /// </summary>
+    public void AddItem(int itemId, int count)
+    {
+        ItemControllerType itemType = GameContainer.Get<DataManager>().GetDataByID<ItemDataBaseTemplete>(itemId).ItemControllerType;
+
+        // 先找到對應類別的背包
+        InventoryCategoryGroup category = CurrentInventory.categoryGroups.Find(c => c.categoryName == itemType);
+
+        // 如果該類別不存在，則創建一個新分類
+        if (category == null)
+        {
+            category = new InventoryCategoryGroup { categoryName = itemType };
+            CurrentInventory.categoryGroups.Add(category);
+        }
+
+        Debug.Log(itemType);
+        
+        // 在對應的分類中查找該物品
+        InventoryItemRuntimeData foundInventoryItemRuntime = category.items.Find(item => item.itemId == itemId);
+
+        if (foundInventoryItemRuntime != null)
+        {
+            foundInventoryItemRuntime.quantity += count;
+        }
+        else
+        {
+            category.items.Add(new InventoryItemRuntimeData { itemId = itemId, quantity = count });
+        }
+    }
+
+    /// <summary>
+    /// 從背包移除物品（依照分類）
+    /// </summary>
+    public void RemoveItem(int itemId, int count)
+    {
+        ItemControllerType itemType = GameContainer.Get<DataManager>().GetDataByID<ItemDataBaseTemplete>(itemId).ItemControllerType;
+
+        // 找到對應類別
+        InventoryCategoryGroup category = CurrentInventory.categoryGroups.Find(c => c.categoryName == itemType);
+        if (category == null)
+        {
+            Debug.LogWarning("背包內沒有該分類的物品");
+            return;
+        }
+
+        // 在分類內查找物品
+        for (int i = 0; i < category.items.Count; i++)
+        {
+            if (category.items[i].itemId == itemId)
+            {
+                if (category.items[i].quantity > count)
+                {
+                    category.items[i].quantity -= count;
+                    return;
+                }
+                else
+                {
+                    count -= category.items[i].quantity;
+                    category.items.RemoveAt(i);
+                    i--; // 刪除後要修正索引
+                }
+
+                if (count <= 0)
+                {
+                    return;
+                }
+            }
+        }
+
+        Debug.LogWarning("背包內沒有足夠的物品可供刪除");
+    }
+
+    /// <summary>
+    /// Debug 用來顯示背包內容（按分類顯示）
+    /// </summary>
+    void PrintInventory()
+    {
+        Debug.Log("========== 目前背包內容 ==========");
+        if (CurrentInventory.categoryGroups.Count == 0)
+        {
+            Debug.Log("背包是空的");
+        }
+        else
+        {
+            foreach (var category in CurrentInventory.categoryGroups)
+            {
+                Debug.Log($"--- 類別: {category.categoryName} ---");
+                if (category.items.Count == 0)
+                {
+                    Debug.Log("  (空)");
+                }
+                else
+                {
+                    foreach (var item in category.items)
+                    {
+                        Debug.Log($"  物品 ID: {item.itemId}, 數量: {item.quantity}");
+                    }
+                }
+            }
+        }
+        Debug.Log("==================================");
+    }
+
+    /// <summary>
+    /// 消除該父類中所有的子類
+    /// </summary>
+    public void ClearChildObjects(Transform parent)
+    {
+        Debug.Log(parent.name + "ClearChildObjects");
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            if (parent.childCount == 0)
+            {
+                break;
+            }
+            Destroy(parent.GetChild(i).gameObject);
+        }
+    }
+    
+    /// <summary>
+    /// 隨機取得背包裡的一個有效物品 (數量 > 0)
+    /// </summary>
+    public InventoryItemRuntimeData GetRandomNonEmptyItem()
+    {
+        if (CurrentInventory == null || CurrentInventory.categoryGroups == null)
+            return null;
+
+        List<InventoryItemRuntimeData> validItems = new List<InventoryItemRuntimeData>();
+
+        // 遍歷所有分類
+        foreach (var category in CurrentInventory.categoryGroups)
+        {
+            if (category.items != null)
+            {
+                // 遍歷分類中的所有物品
+                foreach (var item in category.items)
+                {
+                    if (item != null && item.quantity > 0)
+                    {
+                        validItems.Add(item);
+                    }
+                }
+            }
+        }
+
+        // 如果背包全空
+        if (validItems.Count == 0) return null;
+
+        // 隨機抽一個
+        int randomIndex = UnityEngine.Random.Range(0, validItems.Count);
+        return validItems[randomIndex];
+    }
+    
+    /// <summary>
+    /// 提供給 UI 獲取背包資料的唯一合法接口
+    /// </summary>
+    public List<InventoryItemRuntimeData> GetPlayerItems(ItemControllerType filterType)
+    {
+        List<InventoryItemRuntimeData> result = new List<InventoryItemRuntimeData>();
+        
+        // 這裡從你 private 暫存的變數，或向 SaveManager 拿資料
+        InventoryRuntimeData inventoryData = SaveManager.Instance.CurrentSaveData.InventoryData;
+
+        if (inventoryData == null || inventoryData.categoryGroups == null)
+            return result;
+
+        // 遍歷分類並攤平資料
+        foreach (var group in inventoryData.categoryGroups)
+        {
+            // 如果是 All 就全拿，否則只拿對應分類的物品
+            if (filterType == ItemControllerType.All || group.categoryName == filterType)
+            {
+                // 排除無效資料與數量小於等於 0 的物品
+                foreach (var item in group.items)
+                {
+                    if (item != null && item.quantity > 0)
+                    {
+                        result.Add(item);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+    
+    // 當戰鬥正式開打時，重置雜物
+    private void OnBattleInitiated(BattleInitiatedEvent evt)
+    {
+        ResetJunkForNewBattle();
+    }
+    
+    /// <summary>
+    /// 確保每場戰鬥開始時，所有「雜物」都會重置為 1
+    /// </summary>
+    public void ResetJunkForNewBattle()
+    {
+        // 1. 透過我們剛寫好的 GetAllData 拿到整包物品藍圖
+        List<ItemDataBaseTemplete> allItems = GameContainer.Get<DataManager>().GetAllData<ItemDataBaseTemplete>();
+
+        if (allItems == null) return;
+
+        bool hasAnyJunk = false;
+
+        // 2. 遍歷所有的物品資料
+        foreach (var itemTemplate in allItems)
+        {
+            // ★ 找到分類是 Junk 的物品
+            if (itemTemplate.ItemControllerType == ItemControllerType.Junk)
+            {
+                int junkID = itemTemplate.Id;
+                
+                // 去玩家的背包裡找這個雜物
+                InventoryItemRuntimeData existingJunk = GetInventoryData(junkID);
+
+                // 如果背包裡有，並且數量 > 0，強制設為 1
+                if (existingJunk != null && existingJunk.quantity > 0)
+                {
+                    existingJunk.quantity = 1; 
+                }
+                else
+                {
+                    // 如果沒有，無中生有塞 1 個進去
+                    AddItem(junkID, 1); 
+                }
+                
+                hasAnyJunk = true;
+            }
+        }
+
+        // 3. 如果真的有發配雜物，就發送 UI 刷新事件
+        if (hasAnyJunk)
+        {
+            Debug.Log("<color=cyan>[背包初始化]</color> 偵測到新戰鬥，所有雜物已重置為 1 個！");
+            GameManager.Instance.MainGameEvent.Send(new PlayerBagRefreshedEvent() { ItemControllerType = ItemControllerType.All });
+        }
+    }
+}
+
+[Serializable]
+public class InventoryItemRuntimeData
+{
+    public int itemId;
+    public int quantity;
+    
+    public ItemDataBaseTemplete BaseTemplete => GameContainer.Get<DataManager>().GetDataByID<ItemDataBaseTemplete>(itemId);
+}
+
+[Serializable]
+public class InventoryCategoryGroup
+{
+    public ItemControllerType categoryName;
+    public List<InventoryItemRuntimeData> items =  new();
+}
+
+[Serializable]
+public class InventoryRuntimeData
+{
+    public List<InventoryCategoryGroup> categoryGroups = new();
+}

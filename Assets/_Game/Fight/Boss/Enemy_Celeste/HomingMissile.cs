@@ -1,0 +1,309 @@
+using System.Collections.Generic;
+using Gamemanager;
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody))]
+public class EnemyHomingMissile : EnemyAttackBase, IProjectile
+{
+    [Header("★ 導彈資料配置")]
+    [SerializeField] public HomingMissileDataSO missileData;
+    
+    [Header("★ 旋轉平滑度")] 
+    [SerializeField] private float rotationSmoothSpeed = 15f; // 數值越大轉越快，但能完美過濾瞬間抖動（建議 15 - 30 之間）
+        
+    // 用來記錄上一次安全的、被採用的角度，萬一發生極小抖動就使用舊角度，拒絕亂跳
+    private float _lastSafeAngle = 0f;
+    private bool _hasInitializedAngle = false;
+
+    private Rigidbody _rb;
+    private Transform _target;
+    private float _timer = 0f;
+    private bool _hasExploded = false;
+    private Vector3 _currentVelocity;
+    private Vector3 _lastPosition;
+    
+    // 貝茲曲線專用控制點
+    private Vector3 _p0, _p1, _p2;
+    private float _bezierT = 0f;     // 獨立的貝茲進度
+    private float _curveLength = 1f; // 曲線總長度
+    
+    private readonly RaycastHit[] _hitBuffer = new RaycastHit[4];
+    
+    // 改為這行：紀錄上一次對該目標造成傷害的時間
+    private Dictionary<GameObject, float> _lastDamageTimes = new Dictionary<GameObject, float>();
+    
+    // ★ 1. 宣告畫筆
+    private TrajectoryVisualizer _visualizer;
+
+    public override void Initialize(BossStateMachine boss, float damageMultiplier = 1f, bool ignoreInvincibility = false)
+    {
+        float finalMultiplier = (missileData != null) ? missileData.damageMultiplier * damageMultiplier : damageMultiplier;
+        bool finalIgnore = (missileData != null && missileData.ignoreInvincibility) || ignoreInvincibility;
+        base.Initialize(boss, finalMultiplier, finalIgnore);
+
+        _rb = GetComponent<Rigidbody>();
+        _rb.isKinematic = true; 
+        _rb.useGravity = false;
+        _rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
+
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null) _target = playerObj.transform;
+
+        // ★ 2. 抓取畫筆組件
+        _visualizer = GetComponentInChildren<TrajectoryVisualizer>();
+    }
+    
+    private void FixedUpdate()
+    {
+        if (_hasExploded || missileData == null) return;
+
+        // ==========================================
+        // ★ 3. 雷射車頭燈模式：每一幀重新預測未來軌跡
+        // ==========================================
+        if (_visualizer != null)
+        {
+            // 將導彈「當下的位置」與「當下實際飛行的方向」餵給 SO 算軌跡
+            Vector3 currentDir = _currentVelocity.normalized;
+            if (currentDir.sqrMagnitude < 0.001f) currentDir = transform.up;
+
+            Vector3[] futurePoints = missileData.CalculatePredictedTrajectory(transform.position, currentDir);
+            _visualizer.DrawTrajectory(futurePoints);
+        }
+
+        _timer += Time.fixedDeltaTime;
+
+        if (missileData.launchMode == HomingMissileDataSO.LaunchMode.BezierArc)
+        {
+            if (_bezierT < 1f)
+            {
+                _bezierT += (missileData.speed * Time.fixedDeltaTime) / _curveLength;
+                float t = Mathf.Clamp01(_bezierT);
+                float u = 1f - t;
+                Vector3 nextPos = (u * u * _p0) + (2f * u * t * _p1) + (t * t * _p2);
+                Vector3 moveDelta = nextPos - _lastPosition;
+
+                if (moveDelta.sqrMagnitude > 0.0001f)
+                {
+                    _currentVelocity = moveDelta.normalized * missileData.speed;
+                }
+            }
+            else
+            {
+                ApplyHomingDynamics();
+            }
+        }
+        else if (missileData.launchMode == HomingMissileDataSO.LaunchMode.AngleSpread)
+        {
+            if (_timer >= missileData.homingDelay)
+            {
+                ApplyHomingDynamics();
+            }
+        }
+
+        // ==========================================
+        // 2. 實體撞擊掃描 (合併單次穿透與持續切割)
+        // ==========================================
+        float distanceThisFrame = _currentVelocity.magnitude * Time.fixedDeltaTime;
+        Vector3 moveDir = _currentVelocity.normalized;
+
+        LayerMask combinedMask = missileData.damageLayer | missileData.obstacleLayer;
+
+        int hitCount = ShapeCastUtility.PerformCast(
+            transform.position, moveDir, distanceThisFrame,
+            _hitBuffer, missileData.damageShape, combinedMask
+        );
+
+        if (hitCount > 0)
+        {
+            bool shouldExplode = false;
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider hitCol = _hitBuffer[i].collider;
+                if (hitCol == null) continue;
+
+                // 狀況 A：撞到傷害目標 (玩家)
+                if ((missileData.damageLayer.value & (1 << hitCol.gameObject.layer)) != 0)
+                {
+                    GameObject targetObj = hitCol.gameObject;
+                    
+                    // 檢查是否開啟持續傷害 (Tick)
+                    if (missileData.useDamageTick)
+                    {
+                        if (_lastDamageTimes.TryGetValue(targetObj, out float lastTime))
+                        {
+                            if (Time.time < lastTime + missileData.damageTickInterval)
+                                continue; // 冷卻中，跳過不扣血
+                        }
+                        _lastDamageTimes[targetObj] = Time.time;
+                        damageDealer.DealDamageTo(targetObj);
+                    }
+                    else
+                    {
+                        // 單次傷害模式：只打一次，紀錄極大值讓他永不冷卻
+                        if (!_lastDamageTimes.ContainsKey(targetObj))
+                        {
+                            damageDealer.DealDamageTo(targetObj);
+                            _lastDamageTimes[targetObj] = float.MaxValue; 
+                        }
+                    }
+
+                    // 如果沒有開啟貫穿，打到人就要爆炸
+                    if (!missileData.canPierce) 
+                    {
+                        shouldExplode = true;
+                    }
+                }
+
+                // 狀況 B：撞到牆壁 (障礙物)
+                if ((missileData.obstacleLayer.value & (1 << hitCol.gameObject.layer)) != 0)
+                {
+                    shouldExplode = true; // 撞牆無條件爆炸
+                }
+            }
+
+            if (shouldExplode)
+            {
+                TriggerPayload();
+                return;
+            }
+        }
+
+        // ==========================================
+        // 3. 實際位移與旋轉
+        // ==========================================
+        transform.position += _currentVelocity * Time.fixedDeltaTime;
+        _lastPosition = transform.position;
+
+        if (_currentVelocity.sqrMagnitude > 0.1f)
+        {
+            float targetAngle = Mathf.Atan2(_currentVelocity.y, _currentVelocity.x) * Mathf.Rad2Deg - 90f;
+
+            if (!_hasInitializedAngle)
+            {
+                _lastSafeAngle = targetAngle;
+                _hasInitializedAngle = true;
+                transform.rotation = Quaternion.Euler(0, 0, targetAngle);
+            }
+            else
+            {
+                float currentAngle = transform.rotation.eulerAngles.z;
+                float angleDiff = Mathf.Abs(Mathf.DeltaAngle(currentAngle, targetAngle));
+
+                if (angleDiff > 90f) targetAngle = _lastSafeAngle;
+
+                float smoothedAngle = Mathf.LerpAngle(currentAngle, targetAngle, rotationSmoothSpeed * Time.fixedDeltaTime);
+                transform.rotation = Quaternion.Euler(0, 0, smoothedAngle);
+                _lastSafeAngle = smoothedAngle;
+            }
+        }
+    }
+
+    public void SetTrajectory(Vector3 direction, float speed, bool autoDestroy = true)
+    {
+        if (missileData == null) return;
+        
+        _lastPosition = transform.position;
+
+        if (missileData.launchMode == HomingMissileDataSO.LaunchMode.AngleSpread)
+        {
+            // --- 模式 A：角度散射 ---
+            float angleOffset = missileData.initialArcAngle;
+            if (missileData.randomArcDirection) angleOffset *= (Random.value > 0.5f) ? 1f : -1f;
+            else angleOffset *= missileData.arcToRight ? -1f : 1f; 
+
+            Vector3 rotatedDir = Quaternion.Euler(0, 0, angleOffset) * direction;
+            _currentVelocity = rotatedDir.normalized * missileData.speed;
+        }
+        else
+        {
+            // --- 模式 B：貝茲曲線 ---
+            _p0 = transform.position;
+            _p2 = (_target != null) ? new Vector3(_target.position.x, _target.position.y, 0f) : _p0 + direction.normalized * 10f;
+            
+            Vector3 midPoint = (_p0 + _p2) / 2f;
+            Vector3 dirToTarget = (_p2 - _p0).normalized;
+            Vector3 perpendicular = new Vector3(-dirToTarget.y, dirToTarget.x, 0f);
+
+            float actualOffset = missileData.bezierArcOffset;
+            if (missileData.randomBezierFlip && Random.value > 0.5f) actualOffset = -actualOffset;
+            
+            _p1 = midPoint + perpendicular * actualOffset;
+
+            // ★ 新增：估算二次貝茲曲線的總長度 (弦長與控制網的平均值，效能極佳的逼近法)
+            float chord = Vector3.Distance(_p0, _p2);
+            float contNet = Vector3.Distance(_p0, _p1) + Vector3.Distance(_p1, _p2);
+            _curveLength = (chord + contNet) / 2f;
+            _bezierT = 0f; // 歸零進度
+        }
+        
+        Destroy(gameObject, missileData.lifeTime);
+    }
+
+    private void ApplyHomingDynamics()
+    {
+        if (_target != null && missileData.homingStrength > 0f)
+        {
+            Vector3 targetPos = new Vector3(_target.position.x, _target.position.y, 0f);
+            Vector3 myPos = new Vector3(transform.position.x, transform.position.y, 0f);
+            Vector3 offset = targetPos - myPos;
+            
+            if (offset.sqrMagnitude < 0.25f) return; 
+
+            Vector3 directionToTarget = offset.normalized;
+            float angleToTarget = Vector3.Angle(_currentVelocity.normalized, directionToTarget);
+            
+            if (angleToTarget > 60f) return; 
+
+            Vector3 newDirection = Vector3.RotateTowards(
+                _currentVelocity.normalized, 
+                directionToTarget, 
+                missileData.homingStrength * Mathf.Deg2Rad * Time.fixedDeltaTime, 
+                0.0f
+            );
+            newDirection.z = 0f;
+            
+            if (newDirection.sqrMagnitude > 0.001f)
+            {
+                _currentVelocity = newDirection.normalized * missileData.speed;
+            }
+        }
+    }
+
+    private void TriggerPayload()
+    {
+        if (_hasExploded) return;
+        _hasExploded = true;
+
+        if (missileData.hitEffectPrefab != null)
+        {
+            GameObject payload = Instantiate(missileData.hitEffectPrefab, transform.position, Quaternion.identity);
+            
+            // ★ 註解區塊：不再把傷害資料傳遞給特效 (現在特效純粹只是視覺煙火)
+            /*
+            if (payload.TryGetComponent<EnemyAttackBase>(out var payloadAttack))
+            {
+                payloadAttack.Initialize(ownerBoss, missileData.damageMultiplier, missileData.ignoreInvincibility);
+            }
+            */
+        }
+        
+        if (missileData != null && missileData.enableCameraShake && GameManager.Instance?.MainGameEvent != null)
+        {
+            GameManager.Instance.MainGameEvent.Send(new CameraShakeEvent { Intensity = missileData.shakeIntensity, Duration = missileData.shakeDuration });
+        }
+        
+        Destroy(gameObject);
+    }
+    
+    private void OnDrawGizmos()
+    {
+        if (missileData != null && !Application.isPlaying)
+        {
+            Vector3 dir = transform.up;
+            if (dir.sqrMagnitude < 0.0001f) dir = Vector3.up;
+            // 畫出導彈彈體大小 (不是爆炸大小)
+            missileData.damageShape.DrawGizmo(transform.position, Quaternion.LookRotation(Vector3.forward, dir), Color.yellow);
+        }
+    }
+}

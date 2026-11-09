@@ -1,0 +1,97 @@
+using Gamemanager;
+using System;
+using UniRx;
+
+namespace Gamemanager
+{
+    public class MainGameEventPack : GameEventPack
+    {
+        // ======================
+        // Common Event Streams
+        // ======================
+        public IObservable<GameInitializedEvent> OnGameInitializedEvent => getSubject<GameInitializedEvent>();
+        public IObservable<GameOverEvent> OnGameOverEvent => getSubject<GameOverEvent>();
+        
+        // ======================
+        // Inventory Event Streams
+        // ======================
+
+        public IObservable<PlayerBagRefreshedEvent> OnPlayerBagRefreshedEvent => getSubject<PlayerBagRefreshedEvent>();
+        public IObservable<InventoryItemClickedEvent> OnInventoryItemClickedEvent => getSubject<InventoryItemClickedEvent>();
+        public IObservable<InventoryItemHoveredEvent> OnInventoryItemHoveredEvent => getSubject<InventoryItemHoveredEvent>();
+        public IObservable<ItemAddedToBagEvent> OnItemAddedToBagEvent => getSubject<ItemAddedToBagEvent>();
+        
+        public IObservable<ItemDroppedInWorldEvent> OnItemDroppedInWorldEvent => getSubject<ItemDroppedInWorldEvent>();
+        public IObservable<InventoryDumpTriggeredEvent> OnInventoryDumpTriggeredEvent => getSubject<InventoryDumpTriggeredEvent>();
+        
+        
+        // ======================
+        // Store Event Streams
+        // ======================
+
+        public IObservable<StoreItemsRefreshedEvent> OnStoreItemsRefreshedEvent => getSubject<StoreItemsRefreshedEvent>();
+        public IObservable<StoreItemClickedEvent> OnStoreItemClickedEvent => getSubject<StoreItemClickedEvent>();
+        public IObservable<PurchaseItemClickedEvent> OnPurchaseItemClickedEvent => getSubject<PurchaseItemClickedEvent>();
+
+        // ======================
+        // Scene Event Streams
+        // ======================
+
+        public IObservable<SceneTransitionStartedEvent> OnSceneTransitionStartedEvent => getSubject<SceneTransitionStartedEvent>();
+        public IObservable<SceneLoadedEvent> OnSceneLoadedEvent => getSubject<SceneLoadedEvent>();
+
+        // ======================
+        // Input Player Event Streams
+        // ======================
+
+        public IObservable<FixedUpdateEvent> OnFixedUpdateEvent => getSubject<FixedUpdateEvent>();
+
+        public IObservable<MovementKeyPressedEvent> OnMovementKeyPressedEvent => getSubject<MovementKeyPressedEvent>();
+        public IObservable<CursorToggledEvent> OnCursorToggledEvent => getSubject<CursorToggledEvent>();
+        public IObservable<WalkToggledEvent> OnWalkToggledEvent => getSubject<WalkToggledEvent>();
+        public IObservable<RunPressedEvent> OnRunPressedEvent => getSubject<RunPressedEvent>();
+        public IObservable<JumpPressedEvent> OnJumpPressedEvent => getSubject<JumpPressedEvent>();
+        public IObservable<AttackPressedEvent> OnAttackPressedEvent => getSubject<AttackPressedEvent>();
+
+        // ======================
+        // Input UI Event Streams
+        // ======================
+
+        public IObservable<EscapeKeyPressedEvent> OnEscapeKeyPressedEvent => getSubject<EscapeKeyPressedEvent>();
+        public IObservable<OpenBackpackKeyPressedEvent> OnOpenBackpackKeyPressedEvent => getSubject<OpenBackpackKeyPressedEvent>();
+
+
+        // ======================
+        // Battle Event Streams
+        // ======================
+        
+        public IObservable<StartBattleEvent> OnStartBattleEvent => getSubject<StartBattleEvent>();
+        public IObservable<BattleInitiatedEvent> OnBattleInitiatedEvent => getSubject<BattleInitiatedEvent>();
+        public IObservable<FightButtonClickEvent> OnFightButtonClickEvent => getSubject<FightButtonClickEvent>();
+
+        public IObservable<ItemButtonClickEvent> OnItemButtonClickEvent => getSubject<ItemButtonClickEvent>();
+        
+        public IObservable<PlayerActionCompletedEvent> OnPlayerActionCompletedEvent => getSubject<PlayerActionCompletedEvent>();
+        
+        public IObservable<BossEnterIdlePhaseEvent> OnBossEnterIdlePhaseEvent => getSubject<BossEnterIdlePhaseEvent>();
+
+        public IObservable<BossEnterTransitionPhaseEvent> OnBossEnterTransitionPhaseEvent => getSubject<BossEnterTransitionPhaseEvent>();
+        
+        public IObservable<BossEnterSpecialPhaseEvent> OnBossEnterSpecialPhaseEvent => getSubject<BossEnterSpecialPhaseEvent>();
+        
+        public IObservable<BossEnterAttackingPhaseEvent> OnBossEnterAttackingPhaseEvent => getSubject<BossEnterAttackingPhaseEvent>();
+
+        public IObservable<BossEnterVulnerablePhaseEvent> OnBossEnterVulnerablePhaseEvent => getSubject<BossEnterVulnerablePhaseEvent>();
+
+        public IObservable<CameraShakeEvent> OnCameraShakeEvent => getSubject<CameraShakeEvent>();
+        
+        public IObservable<BossHealthChangedEvent> OnBossHealthChangedEvent => getSubject<BossHealthChangedEvent>();
+
+        public IObservable<BossLowHealthStateEvent> OnBossLowHealthStateEvent => getSubject<BossLowHealthStateEvent>();
+
+        public IObservable<PlayerStaminaChangedEvent> OnPlayerStaminaChangedEvent => getSubject<PlayerStaminaChangedEvent>();
+        
+        public IObservable<PlayerHealthChangedEvent> OnPlayerHealthChangedEvent => getSubject<PlayerHealthChangedEvent>();
+        
+    }
+}

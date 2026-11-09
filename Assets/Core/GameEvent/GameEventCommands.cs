@@ -1,0 +1,239 @@
+using Game.SceneManagement;
+using UnityEngine;
+
+namespace Gamemanager
+{
+    // ======================
+    // Common Event Streams
+    // ======================
+
+    public class GameInitializedEvent : GameEventMessageBase
+    {
+        public int SavePointValue;
+    }
+    
+    public class GameOverEvent : GameEventMessageBase
+    {
+        //public int SavePointValue;
+    }
+    
+    
+
+    // ======================
+    // Inventory Event Streams
+    // ======================
+
+    public class PlayerBagRefreshedEvent : GameEventMessageBase
+    {
+        public ItemControllerType ItemControllerType;
+    }
+
+    public class InventoryItemClickedEvent : GameEventMessageBase
+    {
+        public InventoryItemRuntimeData StoredInventoryItemRuntimeData;
+    }
+
+    public class InventoryItemHoveredEvent : GameEventMessageBase
+    {
+        public InventoryItemRuntimeData StoredInventoryItemRuntimeData;
+        // ★ 新增：傳遞觸發該事件的 UI 座標與尺寸資訊
+        public RectTransform HoveredSlotRect;
+    }
+
+    public class ItemAddedToBagEvent : GameEventMessageBase
+    {
+        public int ItemID;
+        public int Quantity;
+    }
+    
+    public class ItemDroppedInWorldEvent : GameEventMessageBase
+    {
+        public InventoryItemRuntimeData ItemData;
+        public Vector3 DropPosition;
+    }
+    
+    public class InventoryDumpTriggeredEvent : GameEventMessageBase
+    {
+        public Vector3 dumpPosition;
+        public Vector3 dumpVelocity; // ★ 新增這個欄位
+    }
+
+    // ======================
+    // Store Event Streams
+    // ======================
+
+    public class StoreItemsRefreshedEvent : GameEventMessageBase
+    {
+        public ItemControllerType ItemControllerType;
+    }
+
+    public class StoreItemClickedEvent : GameEventMessageBase
+    {
+        public StoreItemRuntimeData StoreItemData;
+    }
+
+    public class PurchaseItemClickedEvent : GameEventMessageBase
+    {
+
+    }
+
+    // ======================
+    // Scene Event Streams
+    // ======================
+
+    public class SceneTransitionStartedEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class SceneLoadedEvent : GameEventMessageBase
+    {
+        // 我們需要一個公共欄位或屬性來攜帶數據
+        public SceneType SceneType { get; private set; }
+
+        // 構造函數：在發送事件時，必須傳入 SceneType
+        public SceneLoadedEvent(SceneType sceneType)
+        {
+            this.SceneType = sceneType;
+        }
+    }
+
+    // ======================
+    // Input Player Event Streams
+    // ======================
+
+    public class FixedUpdateEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class MovementKeyPressedEvent : GameEventMessageBase
+    {
+        public Vector2 MoveInput;
+    }
+
+    public class CursorToggledEvent : GameEventMessageBase
+    {
+        public bool? ShowCursor;
+    }
+
+    public class WalkToggledEvent : GameEventMessageBase
+    {
+        public bool WalkToggled = false;
+    }
+
+    public class RunPressedEvent : GameEventMessageBase
+    {
+        public bool RunPressed = false;
+    }
+
+    public class JumpPressedEvent : GameEventMessageBase
+    {
+        public bool JumpPressed = false;
+    }
+
+    public class AttackPressedEvent : GameEventMessageBase
+    {
+        public bool AttackPressed = false;
+    }
+
+    // ======================
+    // Input UI Event Streams
+    // ======================
+
+    public class EscapeKeyPressedEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class OpenBackpackKeyPressedEvent : GameEventMessageBase
+    {
+
+    }
+
+    // ======================
+    // Battle Event Streams
+    // ======================
+
+    public class StartBattleEvent : GameEventMessageBase
+    {
+        public EntityRuntime EnemyData; 
+        public SceneType BattleScene; // 使用你已定義的 SceneType
+    }
+    
+    public class BattleInitiatedEvent : GameEventMessageBase
+    {
+        
+    }
+    
+    public class FightButtonClickEvent : GameEventMessageBase
+    {
+
+    }
+
+    //當按下物品欄按鈕時，會觸發此事件，並且會鎖定拖曳，直到玩家完成物品欄操作
+    public class ItemButtonClickEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class PlayerActionCompletedEvent : GameEventMessageBase
+    {
+
+    }
+    
+    public class BossEnterIdlePhaseEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class BossEnterTransitionPhaseEvent : GameEventMessageBase
+    {
+        
+    }
+    
+    public class BossEnterSpecialPhaseEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class BossEnterAttackingPhaseEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class BossEnterVulnerablePhaseEvent : GameEventMessageBase
+    {
+
+    }
+
+    public class CameraShakeEvent : GameEventMessageBase
+    {
+        public float Intensity; // 震動強度
+        public float Duration;  // 震動時間
+    }
+    
+    public class BossHealthChangedEvent : GameEventMessageBase
+    {
+        public int CurrentHealth;
+        public int MaxHealth;
+    }
+
+    public class BossLowHealthStateEvent : GameEventMessageBase
+    {
+        public bool IsActive; // true = 開始晃動, false = 停止晃動
+    }
+    
+    public class PlayerStaminaChangedEvent : GameEventMessageBase
+    {
+        public float CurrentStamina;
+        public float MaxStamina;
+    }
+    
+    public class PlayerHealthChangedEvent : GameEventMessageBase
+    {
+        public int CurrentHealth;
+        public int MaxHealth;
+    }
+    
+}

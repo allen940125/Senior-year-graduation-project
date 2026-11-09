@@ -1,0 +1,138 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+/// <summary>
+/// 中介抽象層：專門負責「預警 -> 生成子彈」的標準流程。
+/// 任何會實際射出子彈的 Pattern 都應該繼承此類別，而不是直接繼承 AttackPatternBase。
+/// </summary>
+public abstract class BulletSpawnerBase : AttackPatternBase
+{
+    [Header("★ 生成參數 (全發射器共用)")]
+    public GameObject bulletPrefab;
+    public float baseSpeed = 5f;
+    [Tooltip("每顆子彈發射的間隔時間 (秒)。若為 0 則瞬間齊射")]
+    public float spawnInterval = 0.05f;
+
+    // ★ 新增：發射器專屬的傷害倍率 (代表這一招的威力)
+    [Tooltip("此發射器的額外傷害倍率 (會與子彈SO倍率相乘)")]
+    public float patternDamageMultiplier = 1.0f;
+    
+    // ★ 已經刪除重複定義的 SpawnData！現在這裡統一使用父類別 (AttackPatternBase) 的 SpawnData。
+
+    // 實作 AttackPatternBase 的介面
+    protected override void OnExecute(BossStateMachine boss, float speedMultiplier, bool isAngry)
+    {
+        float finalSpeed = baseSpeed * speedMultiplier;
+        if (isAngry) finalSpeed *= 1.5f;
+
+        transform.SetParent(null); 
+        if (boss != null) boss.RegisterActivePattern(this.gameObject);
+
+        // 啟動範本流程
+        StartCoroutine(ExecuteSpawnerSequence(boss, finalSpeed));
+    }
+
+    // ★ 強制要求子類別實作此方法：純算數學，不要 Instantiate！
+    protected abstract List<SpawnData> CalculateAllSpawnData();
+
+    private IEnumerator ExecuteSpawnerSequence(BossStateMachine boss, float speed)
+    {
+        // 階段 1：呼叫子類別 (例如 GeneralAttackPattern) 的數學運算，取得基本的位置與方向
+        List<SpawnData> dataList = CalculateAllSpawnData();
+
+        // =========================================================
+        // ★ 核心修補：在預警之前，先去 Prefab 身上把 SO 挖出來算軌跡！
+        // =========================================================
+        if (bulletPrefab != null)
+        {
+            // 狀況 A：如果這是一顆普通子彈 (EnemyBullet)
+            if (bulletPrefab.TryGetComponent<EnemyBullet>(out var bullet))
+            {
+                if (bullet.bulletData != null)
+                {
+                    for (int i = 0; i < dataList.Count; i++)
+                    {
+                        var data = dataList[i];
+                        // 呼叫 BulletDataSO 來算軌跡
+                        data.predictedTrajectory = bullet.bulletData.CalculatePredictedTrajectory(data.position, data.direction);
+                        dataList[i] = data; // Struct 必須覆寫回去
+                    }
+                }
+            }
+            // 狀況 B：如果這是一發導彈 (EnemyHomingMissile)
+            else if (bulletPrefab.TryGetComponent<EnemyHomingMissile>(out var missile))
+            {
+                // ★ 注意：這裡需要去 EnemyHomingMissile 腳本中，
+                // 把 missileData 改成 public 才能存取 (public HomingMissileDataSO missileData;)
+                if (missile.missileData != null)
+                {
+                    for (int i = 0; i < dataList.Count; i++)
+                    {
+                        var data = dataList[i];
+                        // 呼叫 HomingMissileDataSO 來算軌跡
+                        data.predictedTrajectory = missile.missileData.CalculatePredictedTrajectory(data.position, data.direction);
+                        dataList[i] = data; 
+                    }
+                }
+            }
+        }
+        // =========================================================
+
+        // 階段 2：呼叫最底層 AttackPatternBase 的預警系統 (現在 dataList 裡面有軌跡點了！)
+        yield return StartCoroutine(ShowWarningsAndWait(dataList));
+
+        // 階段 3：照著同一份資料發射子彈
+        if (spawnInterval > 0f)
+        {
+            foreach (var data in dataList)
+            {
+                CreateBullet(boss, data.position, data.direction, speed);
+                yield return new WaitForSeconds(spawnInterval);
+            }
+        }
+        else
+        {
+            foreach (var data in dataList)
+            {
+                CreateBullet(boss, data.position, data.direction, speed);
+            }
+        }
+
+        // 階段 4：結束並銷毀發射器
+        FinishPattern();
+    }
+
+    private void CreateBullet(BossStateMachine boss, Vector2 spawnPos, Vector2 direction, float speed)
+    {
+        if (bulletPrefab == null) 
+        { 
+            Debug.LogError($"❌ [{name}] 沒放 Bullet Prefab！", this); 
+            return; 
+        }
+        
+        GameObject attackObj = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+        
+        // 1. 職責一：純數值與傷害交割 (對準所有 EnemyAttackBase)
+        if (attackObj.TryGetComponent<EnemyAttackBase>(out var attackBase))
+        {
+            // ★ 注意：這裡已經沒有方向跟速度了
+            attackBase.Initialize(boss, patternDamageMultiplier); 
+        }
+        else
+        {
+            Debug.LogWarning($"[{name}] 生成的物件 {attackObj.name} 缺少 EnemyAttackBase，無法造成傷害！", this);
+        }
+
+        // 2. 職責二：物理軌跡交割 (對準有實作 IProjectile 的飛行物)
+        if (attackObj.TryGetComponent<IProjectile>(out var projectile))
+        {
+            // 將 Vector2 轉為 Vector3，確保 Z 軸為 0 
+            projectile.SetTrajectory(new Vector3(direction.x, direction.y, 0f), speed);
+        }
+
+        // ★ 刪除 boss.RegisterActiveBullet(bullet)
+        // 理由：你在 EnemyBullet 的 Initialize 裡面已經寫過 ownerBoss.RegisterActiveBullet(this.gameObject);
+        // 這裡再寫一次會導致 Boss 管理陣列出現重複指標。
+    }
+}

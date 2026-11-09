@@ -1,0 +1,259 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14192e86ceee4a344b15c43dfbe5d57a, type: 3}
+  m_Name: GameDataDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::GameDataDatabaseSO
+  UIDatabase:
+  - <Id>k__BackingField: 110
+    <Name>k__BackingField: MainMenu
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Menus/MainMenu
+  - <Id>k__BackingField: 120
+    <Name>k__BackingField: BagMenu
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Menus/BagMenu
+  - <Id>k__BackingField: 130
+    <Name>k__BackingField: StoreMenu
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Menus/StoreMenu
+  - <Id>k__BackingField: 140
+    <Name>k__BackingField: GameOverMenu
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Menus/GameOverMenu
+  - <Id>k__BackingField: 150
+    <Name>k__BackingField: GameEndMenu
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Menus/GameEndMenu
+  - <Id>k__BackingField: 160
+    <Name>k__BackingField: SpatialBagMenu
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Menus/SpatialBagMenu
+  - <Id>k__BackingField: 210
+    <Name>k__BackingField: SceneLoadingTransitionPanel
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Panels/SceneLoadingTransitionPanel
+  - <Id>k__BackingField: 220
+    <Name>k__BackingField: GameStartTransitionPanel
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Panels/GameStartTransitionPanel
+  - <Id>k__BackingField: 230
+    <Name>k__BackingField: ConfirmPanel
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Panels/ConfirmPanel
+  - <Id>k__BackingField: 310
+    <Name>k__BackingField: SettingsWindow
+    <UIGroup>k__BackingField: Menu
+    <PrefabPath>k__BackingField: UI/Windows/SettingsWindow
+  - <Id>k__BackingField: 320
+    <Name>k__BackingField: DialogueWindow
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Windows/DialogueWindow
+  - <Id>k__BackingField: 330
+    <Name>k__BackingField: FadeInOutWindow
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Windows/FadeInOutWindow
+  - <Id>k__BackingField: 340
+    <Name>k__BackingField: StoryTextDisplayWindow
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Windows/StoryTextDisplayWindow
+  - <Id>k__BackingField: 410
+    <Name>k__BackingField: GameHUD
+    <UIGroup>k__BackingField: Persistent
+    <PrefabPath>k__BackingField: UI/HUDs/GameHUD
+  - <Id>k__BackingField: 500
+    <Name>k__BackingField: DialogueWindowNew
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Windows/DialogueWindowNew
+  - <Id>k__BackingField: 510
+    <Name>k__BackingField: NarrationWindow
+    <UIGroup>k__BackingField: Popup
+    <PrefabPath>k__BackingField: UI/Windows/NarrationWindow
+  ItemDatabase:
+  - <Id>k__BackingField: 3001
+    <Name>k__BackingField: Money
+    <PrefabPath>k__BackingField: Items/Money
+    <ItemIconPath>k__BackingField: Icons/Money
+    <ItemDescription>k__BackingField: "\u4E16\u754C\u901A\u7528\u8CA8\u5E63"
+    <ItemControllerType>k__BackingField: 30
+    <ItemRarityType>k__BackingField: 20
+    <ItemUseTimes>k__BackingField: 0
+    <LifeTime>k__BackingField: 0
+    <BaseValue>k__BackingField: 1
+    <BuffPrefabPath>k__BackingField: Buffs/HealthBoost
+  - <Id>k__BackingField: 2001
+    <Name>k__BackingField: HealthPotion
+    <PrefabPath>k__BackingField: Items/HealthPotion
+    <ItemIconPath>k__BackingField: Icons/HealthPotionIcon
+    <ItemDescription>k__BackingField: "\u7D05\u85E5\u6C34\u7528\u65BC\u56DE\u5FA9\u8840\u91CF"
+    <ItemControllerType>k__BackingField: 20
+    <ItemRarityType>k__BackingField: 20
+    <ItemUseTimes>k__BackingField: 1
+    <LifeTime>k__BackingField: 10
+    <BaseValue>k__BackingField: 50
+    <BuffPrefabPath>k__BackingField: Buffs/HealthBoost
+  - <Id>k__BackingField: 2002
+    <Name>k__BackingField: ManaPotion
+    <PrefabPath>k__BackingField: Items/ManaPotion
+    <ItemIconPath>k__BackingField: Icons/ManaPotionIcon
+    <ItemDescription>k__BackingField: "\u85CD\u85E5\u6C34\u7528\u65BC\u56DE\u5FA9\u9B54\u529B"
+    <ItemControllerType>k__BackingField: 20
+    <ItemRarityType>k__BackingField: 10
+    <ItemUseTimes>k__BackingField: 1
+    <LifeTime>k__BackingField: 10
+    <BaseValue>k__BackingField: 30
+    <BuffPrefabPath>k__BackingField: Buffs/ManaBoost
+  - <Id>k__BackingField: 2003
+    <Name>k__BackingField: AdvancedMedicalSyringe
+    <PrefabPath>k__BackingField: Items/AdvancedMedicalSyringe
+    <ItemIconPath>k__BackingField: Icons/AdvancedMedicalSyringe
+    <ItemDescription>k__BackingField: "\u9AD8\u7D1A\u91AB\u7642\u6CE8\u5C04\u5668"
+    <ItemControllerType>k__BackingField: 20
+    <ItemRarityType>k__BackingField: 30
+    <ItemUseTimes>k__BackingField: 1
+    <LifeTime>k__BackingField: 10
+    <BaseValue>k__BackingField: 100
+    <BuffPrefabPath>k__BackingField: Buffs/AdvancedMedicalSyringe
+  - <Id>k__BackingField: 9001
+    <Name>k__BackingField: Pen1
+    <PrefabPath>k__BackingField: Items/Pen1
+    <ItemIconPath>k__BackingField: Icons/Pen1
+    <ItemDescription>k__BackingField: "\u4E00\u652F\u666E\u901A\u7684\u539F\u5B50\u7B46\u3002"
+    <ItemControllerType>k__BackingField: 90
+    <ItemRarityType>k__BackingField: 10
+    <ItemUseTimes>k__BackingField: 0
+    <LifeTime>k__BackingField: 0
+    <BaseValue>k__BackingField: 0
+    <BuffPrefabPath>k__BackingField: 
+  - <Id>k__BackingField: 9002
+    <Name>k__BackingField: Pen2
+    <PrefabPath>k__BackingField: Items/Pen2
+    <ItemIconPath>k__BackingField: Icons/Pen2
+    <ItemDescription>k__BackingField: "\u770B\u8D77\u4F86\u6709\u9EDE\u8CB4\u7684\u92FC\u7B46\u3002"
+    <ItemControllerType>k__BackingField: 90
+    <ItemRarityType>k__BackingField: 20
+    <ItemUseTimes>k__BackingField: 0
+    <LifeTime>k__BackingField: 0
+    <BaseValue>k__BackingField: 0
+    <BuffPrefabPath>k__BackingField: 
+  - <Id>k__BackingField: 9003
+    <Name>k__BackingField: Notebook
+    <PrefabPath>k__BackingField: Items/Notebook
+    <ItemIconPath>k__BackingField: Icons/Notebook
+    <ItemDescription>k__BackingField: "\u5BEB\u8457\u4E0D\u660E\u7B46\u8A18\u7684\u672C\u5B50\u3002"
+    <ItemControllerType>k__BackingField: 90
+    <ItemRarityType>k__BackingField: 10
+    <ItemUseTimes>k__BackingField: 0
+    <LifeTime>k__BackingField: 0
+    <BaseValue>k__BackingField: 0
+    <BuffPrefabPath>k__BackingField: 
+  - <Id>k__BackingField: 9004
+    <Name>k__BackingField: IDCard
+    <PrefabPath>k__BackingField: Items/IDCard
+    <ItemIconPath>k__BackingField: Icons/IDCard
+    <ItemDescription>k__BackingField: "\u67D0\u4EBA\u7684\u54E1\u5DE5\u8B58\u5225\u8B49\u3002"
+    <ItemControllerType>k__BackingField: 90
+    <ItemRarityType>k__BackingField: 20
+    <ItemUseTimes>k__BackingField: 0
+    <LifeTime>k__BackingField: 0
+    <BaseValue>k__BackingField: 0
+    <BuffPrefabPath>k__BackingField: 
+  - <Id>k__BackingField: 9005
+    <Name>k__BackingField: Lighter
+    <PrefabPath>k__BackingField: Items/Lighter
+    <ItemIconPath>k__BackingField: Icons/Lighter
+    <ItemDescription>k__BackingField: "\u4E00\u500B\u5FEB\u6C92\u74E6\u65AF\u7684\u6253\u706B\u6A5F\u3002"
+    <ItemControllerType>k__BackingField: 90
+    <ItemRarityType>k__BackingField: 10
+    <ItemUseTimes>k__BackingField: 0
+    <LifeTime>k__BackingField: 0
+    <BaseValue>k__BackingField: 0
+    <BuffPrefabPath>k__BackingField: 
+  StoreDatabase:
+  - <Id>k__BackingField: 1
+    <StoreId>k__BackingField: 1001
+    <Name>k__BackingField: "\u6E2C\u8A66\u5546\u5E97"
+    <ItemId>k__BackingField: 101
+    <ItemBasePrice>k__BackingField: 100
+    <ItemQuantity>k__BackingField: 3
+    <Discount>k__BackingField: 1
+    <MaxPurchase>k__BackingField: -1
+    <RestockInterval>k__BackingField: 0
+  - <Id>k__BackingField: 2
+    <StoreId>k__BackingField: 1001
+    <Name>k__BackingField: "\u6E2C\u8A66\u5546\u5E97"
+    <ItemId>k__BackingField: 102
+    <ItemBasePrice>k__BackingField: 30
+    <ItemQuantity>k__BackingField: 8
+    <Discount>k__BackingField: 1
+    <MaxPurchase>k__BackingField: 100
+    <RestockInterval>k__BackingField: 0
+  - <Id>k__BackingField: 3
+    <StoreId>k__BackingField: 1002
+    <Name>k__BackingField: "\u6E2C\u8A66\u5546\u5E972"
+    <ItemId>k__BackingField: 101
+    <ItemBasePrice>k__BackingField: 30
+    <ItemQuantity>k__BackingField: 10
+    <Discount>k__BackingField: 1
+    <MaxPurchase>k__BackingField: -1
+    <RestockInterval>k__BackingField: 0
+  - <Id>k__BackingField: 4
+    <StoreId>k__BackingField: 1002
+    <Name>k__BackingField: "\u6E2C\u8A66\u5546\u5E972"
+    <ItemId>k__BackingField: 102
+    <ItemBasePrice>k__BackingField: 30
+    <ItemQuantity>k__BackingField: 10
+    <Discount>k__BackingField: 1
+    <MaxPurchase>k__BackingField: 10
+    <RestockInterval>k__BackingField: 0
+  - <Id>k__BackingField: 5
+    <StoreId>k__BackingField: 1002
+    <Name>k__BackingField: "\u6E2C\u8A66\u5546\u5E972"
+    <ItemId>k__BackingField: 101
+    <ItemBasePrice>k__BackingField: 30
+    <ItemQuantity>k__BackingField: 10
+    <Discount>k__BackingField: 1
+    <MaxPurchase>k__BackingField: -1
+    <RestockInterval>k__BackingField: 0
+  - <Id>k__BackingField: 6
+    <StoreId>k__BackingField: 1002
+    <Name>k__BackingField: "\u6E2C\u8A66\u5546\u5E972"
+    <ItemId>k__BackingField: 102
+    <ItemBasePrice>k__BackingField: 30
+    <ItemQuantity>k__BackingField: 10
+    <Discount>k__BackingField: 1
+    <MaxPurchase>k__BackingField: 10
+    <RestockInterval>k__BackingField: 0
+  DialogueDataBase:
+  - <Id>k__BackingField: 1001
+    <Name>k__BackingField: Intro
+    <PrefabPath>k__BackingField: INK/Intro
+  - <Id>k__BackingField: 1002
+    <Name>k__BackingField: Opening
+    <PrefabPath>k__BackingField: INK/Opening
+  - <Id>k__BackingField: 1003
+    <Name>k__BackingField: TransitionNarration
+    <PrefabPath>k__BackingField: INK/Transition
+  - <Id>k__BackingField: 1004
+    <Name>k__BackingField: guideDialogue
+    <PrefabPath>k__BackingField: INK/GuideDialogue
+  - <Id>k__BackingField: 2001
+    <Name>k__BackingField: ExploreIntro
+    <PrefabPath>k__BackingField: INK/ExploreIntro
+  - <Id>k__BackingField: 2002
+    <Name>k__BackingField: Tracks
+    <PrefabPath>k__BackingField: INK/Tracks
+  - <Id>k__BackingField: 2003
+    <Name>k__BackingField: Fisherman
+    <PrefabPath>k__BackingField: INK/Fisherman
+  - <Id>k__BackingField: 2004
+    <Name>k__BackingField: Sky
+    <PrefabPath>k__BackingField: INK/Sky
