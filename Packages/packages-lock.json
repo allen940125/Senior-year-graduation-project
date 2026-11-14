@@ -1,5 +1,15 @@
 {
   "dependencies": {
+    "com.allen.entity-gas": {
+      "version": "https://github.com/allen940125/EntitySystem.git?path=/Assets/AllenGameFramework/EntityGas",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.inputsystem": "1.19.0",
+        "com.unity.cinemachine": "3.1.7"
+      },
+      "hash": "ed855ffd915a83466389b74a7c09128aec825275"
+    },
     "com.esotericsoftware.spine.urp-shaders": {
       "version": "file:com.esotericsoftware.spine.urp-shaders-4.3-2019.1",
       "depth": 0,
@@ -13,6 +23,13 @@
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
+    },
+    "com.inspiaaa.unityhfsm": {
+      "version": "https://github.com/Inspiaaa/UnityHFSM.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "f8fdc2efb862522acd26fab6cd940886c84cde37"
     },
     "com.unity.2d.animation": {
       "version": "14.0.4",
