@@ -207,16 +207,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 2715247920081278791}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 457ccf239114a15479f2f0e640d315c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 3eb540f8800e86940afe167b51ea965c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityCore
   _blueprint: {fileID: 0}
   _runtimeData:
     Blueprint: {fileID: 0}
+    MaxHealth:
+      _baseValue: 0
+      _modifiers: []
+    AttackPower:
+      _baseValue: 0
+      _modifiers: []
+    Defense:
+      _baseValue: 0
+      _modifiers: []
+    CritRate:
+      _baseValue: 0
+      _modifiers: []
+    CritMultiplier:
+      _baseValue: 0
+      _modifiers: []
+    MoveSpeed:
+      _baseValue: 0
+      _modifiers: []
+    DamageInvincibilityDuration:
+      _baseValue: 0
+      _modifiers: []
     _currentHealth: 0
-    _bonusAttackPower: 0
-    _bonusDefense: 0
-    _moveSpeedMultiplier: 1
     _runtimeTraits: []
     CurrentState: 1
   references:

@@ -105,7 +105,6 @@ GameObject:
   - component: {fileID: 6939587175302108501}
   - component: {fileID: 104077437372762857}
   - component: {fileID: 1636394751947586402}
-  - component: {fileID: 2636168118095239677}
   m_Layer: 0
   m_Name: "\u5C0E\u5F48\u7279\u6548 1"
   m_TagString: Untagged
@@ -252,19 +251,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAreaAttack
   attackData: {fileID: 11400000, guid: f1e4977f57770ad47ab1cc62964be101, type: 2}
   enableDamageDebug: 0
---- !u!114 &2636168118095239677
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8955939593327333646}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  _snapshottedIgnoreInvincibility: 0
-  _snapshottedDamage: 15
-  _snapshottedCritRate: 0
-  _snapshottedCritMultiplier: 1.5

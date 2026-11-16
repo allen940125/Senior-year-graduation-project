@@ -79,7 +79,7 @@ PrefabInstance:
     - target: {fileID: 6421792317839229550, guid: f297860abed8db24d868ce783605d27d, type: 3}
       propertyPath: _blueprint
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: 2bac1204059a38240a45dc8181516728, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 725789283853132222, guid: f297860abed8db24d868ce783605d27d, type: 3}
