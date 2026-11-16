@@ -730,7 +730,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.297117, y: -0.74437994, z: 0}
-  m_LocalScale: {x: 1.9731405, y: 1.9922974, z: 1}
+  m_LocalScale: {x: 1.9736903, y: 1.9922974, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1493065282}
@@ -969,8 +969,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8034763294956535289, guid: bb9640aae3d37b64e8a5b0a64a0a9a3e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2138262961}
   m_SourcePrefab: {fileID: 100100000, guid: bb9640aae3d37b64e8a5b0a64a0a9a3e, type: 3}
+--- !u!1 &254925960 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8034763294956535289, guid: bb9640aae3d37b64e8a5b0a64a0a9a3e, type: 3}
+  m_PrefabInstance: {fileID: 254925959}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &303101729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1288,13 +1296,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1913403208673973236, guid: 5edfd2937baf56145af55541fff13e7d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 455744738}
   m_SourcePrefab: {fileID: 100100000, guid: 5edfd2937baf56145af55541fff13e7d, type: 3}
 --- !u!4 &455744736 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3208192742516770528, guid: 5edfd2937baf56145af55541fff13e7d, type: 3}
   m_PrefabInstance: {fileID: 455744735}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &455744737 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1913403208673973236, guid: 5edfd2937baf56145af55541fff13e7d, type: 3}
+  m_PrefabInstance: {fileID: 455744735}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &455744738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455744737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  enableDebug: 0
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5
 --- !u!1001 &458833755
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1354,13 +1387,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 474254236526940092, guid: ff0c6f25f89b9b748be00cd9769336ac, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 458833758}
   m_SourcePrefab: {fileID: 100100000, guid: ff0c6f25f89b9b748be00cd9769336ac, type: 3}
 --- !u!4 &458833756 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3502938418701245096, guid: ff0c6f25f89b9b748be00cd9769336ac, type: 3}
   m_PrefabInstance: {fileID: 458833755}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &458833757 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 474254236526940092, guid: ff0c6f25f89b9b748be00cd9769336ac, type: 3}
+  m_PrefabInstance: {fileID: 458833755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &458833758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458833757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  enableDebug: 0
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5
 --- !u!1001 &466204955
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3587,8 +3645,33 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8034763294956535289, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1215885944}
   m_SourcePrefab: {fileID: 100100000, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
+--- !u!1 &1215885943 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8034763294956535289, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
+  m_PrefabInstance: {fileID: 1215885942}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1215885944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215885943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  enableDebug: 0
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5
 --- !u!1 &1224916879
 GameObject:
   m_ObjectHideFlags: 0
@@ -6172,6 +6255,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7222599819936142582, guid: bb9640aae3d37b64e8a5b0a64a0a9a3e, type: 3}
   m_PrefabInstance: {fileID: 254925959}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2138262961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254925960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  enableDebug: 0
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5
 --- !u!1 &2139161503
 GameObject:
   m_ObjectHideFlags: 0
@@ -6868,10 +6968,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4907828615333759516}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  enableDebug: 0
   _snapshottedIgnoreInvincibility: 0
   _snapshottedDamage: 15
   _snapshottedCritRate: 0

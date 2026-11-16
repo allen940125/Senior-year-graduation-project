@@ -272,6 +272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAreaAttack
   attackData: {fileID: 11400000, guid: 33ab3d2129306e845bc74b7cc7a796aa, type: 2}
+  enableDamageDebug: 0
 --- !u!114 &7005765909813318066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,7 +282,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8034763294956535289}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
   _snapshottedIgnoreInvincibility: 0

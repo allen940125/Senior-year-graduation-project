@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 3538824483145337242}
   - component: {fileID: 4631411528473053403}
   - component: {fileID: 3590738851750285873}
+  - component: {fileID: 8704894358088742912}
   m_Layer: 0
   m_Name: "\u7206\u70B8"
   m_TagString: Untagged
@@ -246,10 +247,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8406468819089139672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  enableDebug: 0
   _snapshottedIgnoreInvincibility: 0
   _snapshottedDamage: 30
   _snapshottedCritRate: 0
@@ -290,3 +290,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8704894358088742912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8406468819089139672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5

@@ -102,6 +102,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4423794633339259293, guid: 5cd0a4a1362b293428cb3b936adaaf63, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5122796061722893299}
+    - targetCorrespondingSourceObject: {fileID: 4423794633339259293, guid: 5cd0a4a1362b293428cb3b936adaaf63, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1637911080511029274}
+    - targetCorrespondingSourceObject: {fileID: 4423794633339259293, guid: 5cd0a4a1362b293428cb3b936adaaf63, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 7040019828199806088, guid: 5cd0a4a1362b293428cb3b936adaaf63, type: 3}
       insertIndex: -1
       addedObject: {fileID: 541968870757684678}
@@ -146,10 +152,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6208600382603281232}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  enableDebug: 0
   _snapshottedIgnoreInvincibility: 0
   _snapshottedDamage: 15
   _snapshottedCritRate: 0
@@ -195,3 +200,19 @@ MonoBehaviour:
   activeDuration: 2
   airFriction: 15
   dropSpeedThreshold: 2
+--- !u!114 &1637911080511029274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6208600382603281232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5

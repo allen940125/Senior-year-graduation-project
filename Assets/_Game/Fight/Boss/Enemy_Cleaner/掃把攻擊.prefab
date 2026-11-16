@@ -263,6 +263,8 @@ MonoBehaviour:
     showHitEffect: 1
     hitEffectPrefab: {fileID: 0}
     rotationMode: 1
+  currentDirection: {x: 0, y: 0, z: 0}
+  currentSpeed: 0
   debug_bulletData_damageMultiplier: 0
   debug_AttackPattern_damageMultiplier: 0
   debug_actualMultiplier: 0
@@ -302,10 +304,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8034763294956535289}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  ignoreInvincibility: 0
+  _snapshottedIgnoreInvincibility: 0
   _snapshottedDamage: 15
   _snapshottedCritRate: 0
   _snapshottedCritMultiplier: 1.5

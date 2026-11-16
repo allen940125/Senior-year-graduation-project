@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(DamageDealer))] 
-[RequireComponent(typeof(KinematicTracker3D))] // ★ 強制掛載速度追蹤器
+//[RequireComponent(typeof(DamageDealer))] 
+//[RequireComponent(typeof(KinematicTracker3D))] // ★ 強制掛載速度追蹤器
 public class RammingWeaponBehavior3D : MonoBehaviour
 {
     [Header("★ 物理撞擊設定")]

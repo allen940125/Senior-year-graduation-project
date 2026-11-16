@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8594676290242549760}
   - component: {fileID: 7836278492149144144}
   - component: {fileID: 7731652204730760309}
+  - component: {fileID: 7005765909813318066}
   m_Layer: 0
   m_Name: "\u5C0E\u5F48\u653B\u64CA"
   m_TagString: EnemyBullet
@@ -85,10 +86,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8034763294956535289}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  enableDebug: 0
+  _snapshottedIgnoreInvincibility: 0
+  _snapshottedDamage: 15
+  _snapshottedCritRate: 0
+  _snapshottedCritMultiplier: 1.5
+--- !u!114 &7005765909813318066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8034763294956535289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e6b746c869aa445bd73245dc212158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
   _snapshottedIgnoreInvincibility: 0
   _snapshottedDamage: 15
   _snapshottedCritRate: 0

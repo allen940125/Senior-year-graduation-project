@@ -392,6 +392,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.yasirkula.assetusagedetector": {
+      "version": "https://github.com/yasirkula/UnityAssetUsageDetector.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "7b291b2190e4352eeaa110cbb929365131794e0b"
+    },
     "dev.yarnspinner.unity": {
       "version": "file:../Assets/Plugins/YarnSpinner-Unity-3.1.1",
       "depth": 0,
