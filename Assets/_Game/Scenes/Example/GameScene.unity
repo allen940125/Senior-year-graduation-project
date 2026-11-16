@@ -966,7 +966,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7005765909813318066, guid: bb9640aae3d37b64e8a5b0a64a0a9a3e, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -1293,7 +1294,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2951963389242120157, guid: 5edfd2937baf56145af55541fff13e7d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -1384,7 +1386,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4598040702934003230, guid: ff0c6f25f89b9b748be00cd9769336ac, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -3642,36 +3645,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7005765909813318066, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8034763294956535289, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1215885944}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
---- !u!1 &1215885943 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8034763294956535289, guid: 7152de0b9b86ead4aa212d8d49ca448c, type: 3}
-  m_PrefabInstance: {fileID: 1215885942}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1215885944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1215885943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de31ad036704da34ebe2f079a5b56268, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamageDealer
-  enableDebug: 0
-  _snapshottedIgnoreInvincibility: 0
-  _snapshottedDamage: 15
-  _snapshottedCritRate: 0
-  _snapshottedCritMultiplier: 1.5
 --- !u!1 &1224916879
 GameObject:
   m_ObjectHideFlags: 0
