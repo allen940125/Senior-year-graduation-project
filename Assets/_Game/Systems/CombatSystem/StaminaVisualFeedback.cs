@@ -49,7 +49,7 @@ public class StaminaVisualFeedback : MonoBehaviour, IEntityRuntimeDependent
     private void UpdateStaminaColor(float ratio)
     {
         // 若實體正在無敵/受擊閃爍狀態，放棄修改顏色，交由 Damage 邏輯主導
-        if (_entityData != null && _entityData.HasState(EntityStateFlags.Invincible)) return;
+        if (_entityData != null && _entityData.HasAnyState(EntityStateFlags.Invincible)) return;
 
         _sr.color = Color.Lerp(_lowStaminaColor, _normalColor, ratio);
     }

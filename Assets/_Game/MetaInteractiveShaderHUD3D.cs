@@ -119,7 +119,7 @@ public class MetaInteractiveShaderHUD3D : MonoBehaviour
         {
             case DisplayMode.Health:
                 // ★ 關鍵：必須等到 HealthComponent 把最大血量寫入後，才算是一隻活著的 Boss
-                return candidate.MaxHealth > 0; 
+                return candidate.MaxHealth.Value > 0; 
             case DisplayMode.Stamina:
                 return candidate.TryGetTrait(out StaminaTrait _);
             case DisplayMode.Timer:
@@ -172,7 +172,8 @@ public class MetaInteractiveShaderHUD3D : MonoBehaviour
         if (displayMode == DisplayMode.Health)
         {
             _target.OnHealthRatioChanged += UpdateTargetRatio;
-            UpdateTargetRatio(_target.MaxHealth > 0 ? (float)_target.CurrentHealth / _target.MaxHealth : 0f);
+            float maxHp = _target.MaxHealth.Value;
+            UpdateTargetRatio(maxHp > 0f ? _target.CurrentHealth / maxHp : 0f);
         }
         else if (displayMode == DisplayMode.Stamina)
         {

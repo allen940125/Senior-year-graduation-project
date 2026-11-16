@@ -92,7 +92,11 @@ public class RammingWeaponBehavior3D : MonoBehaviour
             var playerRuntime = GameManager.Instance.MainGameMediator.CurrentPlayerRuntime;
             if (playerRuntime != null)
             {
-                damageDealer.InjectSnapshot(playerRuntime.TotalAttackPower, playerRuntime.TotalCritRate, playerRuntime.TotalCritMultiplier);
+                damageDealer.InjectSnapshot(
+                    playerRuntime.AttackPower.Value, 
+                    playerRuntime.CritRate.Value, 
+                    playerRuntime.CritMultiplier.Value
+                );
             }
 
             damageDealer.DealDamageTo(target);

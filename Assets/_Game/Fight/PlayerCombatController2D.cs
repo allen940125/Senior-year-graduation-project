@@ -13,15 +13,15 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
     public float smoothTime = 0.08f;
     public float staminaRegenDelay = 0.8f;
 
-    [Header("逃跑用速度")]
+    [Header("逃跑用速度 (若已改用 UPM Buff 系統，此欄可設為 1 或移除)")]
     public float MoveSpeedMultiplier = 1f;
 
-    private bool _isDashCooldown = false;
+    // [Dash 註解] private bool _isDashCooldown = false;
     private float _lastStaminaConsumeTime;
     
     private Vector3 _currentInput;
     private Vector3 _currentVelocity;
-    private Vector3 _dashDirection;
+    // [Dash 註解] private Vector3 _dashDirection;
     
     // 在變數宣告區加入 Animator
     private Rigidbody _rb;
@@ -61,20 +61,25 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
     private bool CanMove()
     {
         if (_entityData == null) return false;
-        return !_entityData.HasState(EntityStateFlags.Dashing) && 
-               !_entityData.HasState(EntityStateFlags.Stunned) && 
-               !_entityData.HasState(EntityStateFlags.Dead);
+        // ★ 修改 1：改用 UPM 的 HasAnyState 檢查狀態標籤
+        return // !_entityData.HasAnyState(EntityStateFlags.Dashing) && // [Dash 註解]
+               !_entityData.HasAnyState(EntityStateFlags.Stunned) && 
+               !_entityData.HasAnyState(EntityStateFlags.Dead);
     }
 
+    // [Dash 註解] 整個 CanDash 方法先註解
+    /*
     private bool CanDash() => CanMove() && 
                               !_isDashCooldown && 
                               _staminaTrait != null && 
                               _staminaTrait.currentStamina >= _staminaTrait.dashCost && 
                               _currentInput != Vector3.zero;
+    */
 
     private void Update()
     {
-        if (_entityData == null || _entityData.HasState(EntityStateFlags.Dead)) return;
+        // ★ 修改 2：HasState 改為 HasAnyState
+        if (_entityData == null || _entityData.HasAnyState(EntityStateFlags.Dead)) return;
 
         HandleStaminaRegen();
         HandleInput();
@@ -84,7 +89,7 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
     {
         if (_staminaTrait == null) return; 
 
-        if (!_entityData.HasState(EntityStateFlags.Dashing) && 
+        if (// !_entityData.HasAnyState(EntityStateFlags.Dashing) && // [Dash 註解]
             _staminaTrait.currentStamina < _staminaTrait.maxStamina && 
             Time.time >= _lastStaminaConsumeTime + staminaRegenDelay)
         {
@@ -107,10 +112,13 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
             _currentInput = new Vector3(x, y, 0f).normalized;
         }
 
-        if (Keyboard.current.shiftKey.wasPressedThisFrame && CanDash())
+        // [Dash 註解] Shift 觸發衝刺
+        /*
+        if (Keyboard.current != null && Keyboard.current.shiftKey.wasPressedThisFrame && CanDash())
         {
             StartCoroutine(DashRoutine());
         }
+        */
     }
 
     private void FixedUpdate()
@@ -121,18 +129,21 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
             transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
         }
 
-        if (_entityData != null && _entityData.HasState(EntityStateFlags.Dashing))
+        // [Dash 註解] 衝刺狀態的位移邏輯
+        /*
+        if (_entityData != null && _entityData.HasAnyState(EntityStateFlags.Dashing))
         {
             float dashSpd = _staminaTrait != null ? _staminaTrait.dashSpeed : 20f;
             _rb.linearVelocity = _dashDirection * dashSpd;
         }
-        else if (CanMove())
+        else 
+        */
+        if (CanMove())
         {
-            // ★ 修改：從 _entityData 裡面讀取 MoveSpeedMultiplier
-            float buffMultiplier = _entityData != null ? _entityData.MoveSpeedMultiplier : 1.0f;
-            float baseMoveSpd = _staminaTrait != null ? _staminaTrait.moveSpeed : 5f;
+            // ★ 修改 3：直接讀取 UPM 的 MoveSpeed.Value（已包含 Blueprint.baseMoveSpeed 與所有速度 Buff）
+            float runtimeMoveSpd = _entityData != null ? _entityData.MoveSpeed.Value : 5f;
+            float finalMoveSpd = runtimeMoveSpd * MoveSpeedMultiplier; 
             
-            float finalMoveSpd = baseMoveSpd * buffMultiplier; // ★ 計算最終速度
             Vector3 targetVelocity = _currentInput * finalMoveSpd;
             
             _rb.linearVelocity = Vector3.SmoothDamp(_rb.linearVelocity, targetVelocity, ref _currentVelocity, smoothTime);
@@ -143,9 +154,11 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
         }
     }
 
+    // [Dash 註解] 整個衝刺協程與 360 度旋轉表現（已預先對齊 UPM 的 AddStateWithCount）
+    /*
     private IEnumerator DashRoutine()
     {
-        _entityData.AddState(EntityStateFlags.Dashing | EntityStateFlags.Invincible);
+        _entityData.AddStateWithCount(EntityStateFlags.Dashing | EntityStateFlags.Invincible);
         
         _isDashCooldown = true;
         _lastStaminaConsumeTime = Time.time;
@@ -156,51 +169,34 @@ public class PlayerCombatController2D : MonoBehaviour, IEntityRuntimeDependent
         _dashDirection = _currentInput;
         float duration = _staminaTrait != null ? _staminaTrait.dashDuration : 0.2f;
 
-        // ==========================================
-        // ★ 開始硬寫：視覺 360 度旋轉邏輯
-        // ==========================================
         if (visualPivot != null)
         {
-            // 決定旋轉方向：如果向左衝(x < 0)，轉 +360 度；向右衝轉 -360 度
             float spinDirection = (_currentInput.x < 0) ? 1f : -1f;
-            
-            // 記錄轉動前的原始角度，確保轉完不會歪掉
             Quaternion startRotation = visualPivot.localRotation;
-            
             float elapsed = 0f;
             
-            // 在 duration (衝刺時間) 內，每一幀去旋轉它
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                // 計算當前時間的進度百分比 (0.0 ~ 1.0)
                 float percent = elapsed / duration;
-                
-                // 算出當下應該轉幾度
                 float currentAngle = Mathf.Lerp(0f, 360f * spinDirection, percent);
-                
-                // 套用到 Z 軸 (2.5D 通常是轉 Z 軸，如果是 3D 往前翻跟斗可能是轉 X 軸，可自行修改)
                 visualPivot.localRotation = startRotation * Quaternion.Euler(0, 0, currentAngle);
-                
-                // 暫停一幀，下一幀繼續迴圈
                 yield return null; 
             }
             
-            // 衝刺結束，強制精準歸位，防止小數點誤差導致模型稍微傾斜
             visualPivot.localRotation = startRotation;
         }
         else
         {
-            // 如果沒綁定模型，就乖乖等時間過去
             yield return new WaitForSeconds(duration);
         }
-        // ==========================================
 
-        _entityData.RemoveState(EntityStateFlags.Dashing | EntityStateFlags.Invincible);
+        _entityData.RemoveStateWithCount(EntityStateFlags.Dashing | EntityStateFlags.Invincible);
         _rb.linearVelocity = Vector3.zero;
 
         float cooldown = _staminaTrait != null ? _staminaTrait.dashCooldown : 0.5f;
         yield return new WaitForSeconds(cooldown);
         _isDashCooldown = false;
     }
+    */
 }

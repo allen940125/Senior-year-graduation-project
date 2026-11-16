@@ -252,6 +252,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6421792317839229550, guid: f297860abed8db24d868ce783605d27d, type: 3}
+      propertyPath: _blueprint
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 725789283853132222, guid: f297860abed8db24d868ce783605d27d, type: 3}
@@ -284,9 +288,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2715247920081278791, guid: f297860abed8db24d868ce783605d27d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2951963389242120157}
-    - targetCorrespondingSourceObject: {fileID: 2715247920081278791, guid: f297860abed8db24d868ce783605d27d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 8807953298321465338, guid: f297860abed8db24d868ce783605d27d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1362941320555408764}

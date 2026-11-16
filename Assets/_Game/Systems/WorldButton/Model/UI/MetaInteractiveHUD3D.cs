@@ -101,7 +101,8 @@ public class MetaInteractiveHUD3D : InteractiveMetaEntity3D
         if (displayMode == DisplayMode.Health)
         {
             _target.OnHealthRatioChanged += UpdateTargetRatio;
-            UpdateTargetRatio(_target.MaxHealth > 0 ? (float)_target.CurrentHealth / _target.MaxHealth : 0f);
+            float maxHp = _target.MaxHealth.Value;
+            UpdateTargetRatio(maxHp > 0f ? _target.CurrentHealth / maxHp : 0f);
         }
         else if (displayMode == DisplayMode.Stamina)
         {

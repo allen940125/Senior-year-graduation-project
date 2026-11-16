@@ -37,8 +37,8 @@ public class OneTurnSpeedBuffAction : ICommandAction
 
         // ★ 把這個拋棄式腳本隨便掛在 GameManager 身上 (或任何不會死掉的空物件)
         // 因為它現在純粹操作資料，根本不需要掛在玩家模型上！
-        var buffManager = new GameObject("Temp_SpeedBuff").AddComponent<OneTurnSpeedModifier>();
-        buffManager.ApplyBuff(playerRuntime, speedMultiplier);
+        // var buffManager = new GameObject("Temp_SpeedBuff").AddComponent<OneTurnSpeedModifier>();
+        // buffManager.ApplyBuff(playerRuntime, speedMultiplier);
                 
         Debug.Log($"[指令] 玩家單回合加速 {speedMultiplier} 倍，資料已注入！");
     }
@@ -178,7 +178,7 @@ public class HealAction : ICommandAction // 拿掉 Player 前綴，因為現在�
         }
 
         // 3. 記錄治療前狀態
-        int healthBefore = targetData.CurrentHealth;
+        float healthBefore = targetData.CurrentHealth;
 
         // 4. 執行治療
         HealPayload payload = new HealPayload()
@@ -191,8 +191,8 @@ public class HealAction : ICommandAction // 拿掉 Player 前綴，因為現在�
         {
             anchor.TryHeal(payload);
 
-            int healthAfter = targetData.CurrentHealth;
-            int actualHealed = healthAfter - healthBefore;
+            float healthAfter = targetData.CurrentHealth;
+            float actualHealed = healthAfter - healthBefore;
 
             Debug.Log($"<color=#57A64A>[HealAction 成功]</color> 執行治療：" +
                       $"\n- 目標模式: <b>{targetType}</b>" +

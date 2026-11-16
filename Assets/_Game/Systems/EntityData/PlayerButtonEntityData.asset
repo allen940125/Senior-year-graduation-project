@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adbf14acc879d1c4283a41df2e5ac52e, type: 3}
+  m_Script: {fileID: 11500000, guid: 9bcb33e006f8ddb4c8c99aa52db831a7, type: 3}
   m_Name: PlayerButtonEntityData
   m_EditorClassIdentifier: Assembly-CSharp::EntityBlueprintSO
   battlePrefab: {fileID: 0}
@@ -18,30 +18,18 @@ MonoBehaviour:
   defense: 20
   critRate: 0.2
   critMultiplier: 1.5
+  baseMoveSpeed: 5
+  damageInvincibilityDuration: 0.5
   traits:
-  - rid: 1686755775413485662
-  - rid: 1686755775413485663
-  - rid: 1686755882385539242
+  - rid: 5289023426527456
+  - rid: 5289023426527464
   references:
     version: 2
     RefIds:
-    - rid: 1686755775413485662
-      type: {class: ExplorationTrait, ns: , asm: Assembly-CSharp}
-      data:
-        adventureWalkSpeed: 6
-        adventureSprintSpeed: 12
-        jumpForce: 8
-        gravityMultiplier: 2
-        fallDamageThreshold: 10
-    - rid: 1686755775413485663
-      type: {class: StaminaTrait, ns: , asm: Assembly-CSharp}
-      data:
-        maxStamina: 100
-        moveSpeed: 10
-        dashSpeed: 20
-        dashCost: 30
-        dashDuration: 0.2
-        dashCooldown: 0.5
-    - rid: 1686755882385539242
-      type: {class: RuntimeAnchorTrait, ns: , asm: Assembly-CSharp}
+    - rid: 5289023426527456
+      type: {class: RuntimeAnchorTrait, ns: , asm: Allen.EntityGas}
       data: 
+    - rid: 5289023426527464
+      type: {class: TimerTrait, ns: , asm: Allen.EntityGas}
+      data:
+        currentTimer: 0

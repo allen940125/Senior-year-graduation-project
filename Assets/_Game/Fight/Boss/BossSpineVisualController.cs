@@ -159,7 +159,8 @@ public class BossSpineVisualController : MonoBehaviour
         Sprite finalHitSprite = null;
         if (hitSpriteVariants != null && hitSpriteVariants.Count > 0)
         {
-            float currentHpRatio = (float)stateMachine.BossRuntimeData.CurrentHealth / stateMachine.BossRuntimeData.MaxHealth;
+            float maxHp = stateMachine.BossRuntimeData.MaxHealth.Value;
+            float currentHpRatio = maxHp > 0f ? stateMachine.BossRuntimeData.CurrentHealth / maxHp : 0f;
             hitSpriteVariants.Sort((a, b) => a.healthThreshold.CompareTo(b.healthThreshold));
             
             finalHitSprite = hitSpriteVariants[0].hitSprite;
@@ -190,7 +191,7 @@ public class BossSpineVisualController : MonoBehaviour
         }
     }
 
-    private void HandleDamageTaken(int damage)
+    private void HandleDamageTaken(float damage)
     {
         if (staticHitSprite == null) 
         {
@@ -217,7 +218,8 @@ public class BossSpineVisualController : MonoBehaviour
         float currentHpRatio = 1f;
         if (stateMachine != null && stateMachine.BossRuntimeData != null)
         {
-            currentHpRatio = (float)stateMachine.BossRuntimeData.CurrentHealth / stateMachine.BossRuntimeData.MaxHealth;
+            float maxHp = stateMachine.BossRuntimeData.MaxHealth.Value;
+            currentHpRatio = maxHp > 0f ? stateMachine.BossRuntimeData.CurrentHealth / maxHp : 0f;
         }
 
         variants.Sort((a, b) => a.healthThreshold.CompareTo(b.healthThreshold));

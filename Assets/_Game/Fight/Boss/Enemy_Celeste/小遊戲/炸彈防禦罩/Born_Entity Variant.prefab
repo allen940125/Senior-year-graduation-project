@@ -27,7 +27,7 @@ PrefabInstance:
     - target: {fileID: 1835490865948002528, guid: 1259d2d8075d20544b150bed05060312, type: 3}
       propertyPath: _blueprint
       value: 
-      objectReference: {fileID: 11400000, guid: 871350f6ad33fdf48aeda3899992cd4e, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 5445285325801324402, guid: 1259d2d8075d20544b150bed05060312, type: 3}
       propertyPath: m_Layer
       value: 13
@@ -113,6 +113,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 799614136306252304, guid: 1259d2d8075d20544b150bed05060312, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7933837757030971619}
+    - targetCorrespondingSourceObject: {fileID: 799614136306252304, guid: 1259d2d8075d20544b150bed05060312, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 5445285325801324402, guid: 1259d2d8075d20544b150bed05060312, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4800366274477646471}

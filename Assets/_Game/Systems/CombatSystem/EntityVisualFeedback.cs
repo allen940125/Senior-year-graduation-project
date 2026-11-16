@@ -37,10 +37,11 @@ public class EntityVisualFeedback : MonoBehaviour
         // 如果正在播放受擊閃爍，或者目標已死，暫停殘血呼吸燈運算
         if (_isDamageFlashing || sr == null || !enableLowHealthFlash || _core == null || _core.RuntimeData == null) return;
 
-        float hpRatio = (float)_core.RuntimeData.CurrentHealth / _core.RuntimeData.MaxHealth;
+        float maxHp = _core.RuntimeData.MaxHealth.Value;
+        float currentHpRatio = maxHp > 0f ? _core.RuntimeData.CurrentHealth / maxHp : 0f;
 
         // 判斷是否處於殘血且活著
-        if (hpRatio > 0 && hpRatio <= lowHealthThreshold)
+        if (currentHpRatio > 0 && currentHpRatio <= lowHealthThreshold)
         {
             // 利用 PingPong 做出平滑呼吸燈效果 (0 到 1 之間來回)
             float lerp = Mathf.PingPong(Time.time * lowHealthPulseSpeed, 1f);

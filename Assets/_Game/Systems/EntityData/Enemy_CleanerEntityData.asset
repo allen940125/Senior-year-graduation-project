@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adbf14acc879d1c4283a41df2e5ac52e, type: 3}
+  m_Script: {fileID: 11500000, guid: 9bcb33e006f8ddb4c8c99aa52db831a7, type: 3}
   m_Name: Enemy_CleanerEntityData
   m_EditorClassIdentifier: Assembly-CSharp::EntityBlueprintSO
   battlePrefab: {fileID: 1992103494201206248, guid: 10b297e2ff86540469d75d47f74eb5f8, type: 3}
@@ -18,16 +18,18 @@ MonoBehaviour:
   defense: 3
   critRate: 0
   critMultiplier: 1.5
+  baseMoveSpeed: 5
+  damageInvincibilityDuration: 0.5
   traits:
-  - rid: 1686755775413485664
-  - rid: 1507063330796208290
+  - rid: 5289023426527469
+  - rid: 5289023426527471
   references:
     version: 2
     RefIds:
-    - rid: 1507063330796208290
-      type: {class: RuntimeAnchorTrait, ns: , asm: Assembly-CSharp}
+    - rid: 5289023426527469
+      type: {class: RuntimeAnchorTrait, ns: , asm: Allen.EntityGas}
       data: 
-    - rid: 1686755775413485664
-      type: {class: TimerTrait, ns: , asm: Assembly-CSharp}
+    - rid: 5289023426527471
+      type: {class: TimerTrait, ns: , asm: Allen.EntityGas}
       data:
         currentTimer: 0

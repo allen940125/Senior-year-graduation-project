@@ -39,7 +39,10 @@ public class DamageToInteractionAdapter : MonoBehaviour, IEntityRuntimeDependent
             _currentData.OnHealthRatioChanged += HandleHealthChanged;
             
             // 初始化時先手動檢查一次當前狀態
-            float initialRatio = _currentData.MaxHealth > 0 ? (float)_currentData.CurrentHealth / _currentData.MaxHealth : 0f;
+            float maxHp = _currentData.MaxHealth.Value;
+            float initialRatio = maxHp > 0f ? _currentData.CurrentHealth / maxHp : 0f;
+            
+            //float initialRatio = _currentData.MaxHealth > 0 ? (float)_currentData.CurrentHealth / _currentData.MaxHealth : 0f;
             HandleHealthChanged(initialRatio);
         }
     }

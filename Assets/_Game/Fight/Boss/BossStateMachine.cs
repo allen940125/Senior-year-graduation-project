@@ -138,7 +138,7 @@ public abstract class BossStateMachine : MonoBehaviour
     
     
     // 管道 A：受傷觸發 (保留你原本的設計)
-    private void HandleBossDamaged(int finalDamage)
+    private void HandleBossDamaged(float finalDamage)
     {
         if (_bossData.CurrentHealth <= 0)
         {
@@ -367,7 +367,10 @@ public abstract class BossStateMachine : MonoBehaviour
     {
         if (_bossData == null) return 0;
     
-        float currentHpRatio = (float)_bossData.CurrentHealth / _bossData.MaxHealth;
+
+        float maxHp = BossRuntimeData.MaxHealth.Value;
+        float currentHpRatio = maxHp > 0f ? BossRuntimeData.CurrentHealth / maxHp : 0f;
+        
         int index = 0;
     
         for (int i = 0; i < phaseConfigs.Count; i++)

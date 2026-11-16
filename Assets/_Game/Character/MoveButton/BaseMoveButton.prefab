@@ -210,12 +210,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 457ccf239114a15479f2f0e640d315c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityCore
-  _blueprint: {fileID: 11400000, guid: 2bac1204059a38240a45dc8181516728, type: 2}
+  _blueprint: {fileID: 0}
   _runtimeData:
     Blueprint: {fileID: 0}
     _currentHealth: 0
     _bonusAttackPower: 0
     _bonusDefense: 0
+    _moveSpeedMultiplier: 1
     _runtimeTraits: []
     CurrentState: 1
   references:
@@ -230,11 +231,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2715247920081278791}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a5618b6910a5c74e9d6b7ede2a5223c, type: 3}
+  m_Script: {fileID: 11500000, guid: 112d8efb2c7548f49a9bbd96ca25a708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityHealthComponent
   enableDebug: 0
-  invincibilityDuration: 1.5
   onTakeDamageVisuals:
     m_PersistentCalls:
       m_Calls: []

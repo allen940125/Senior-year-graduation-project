@@ -6647,6 +6647,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player_Entity Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 4377270496757993591, guid: 9b7a23c75db2611498700632df5056f7, type: 3}
+      propertyPath: _blueprint
+      value: 
+      objectReference: {fileID: 11400000, guid: d7500c1bae3a3ac4588bc16aa14f4679, type: 2}
     - target: {fileID: 4651392618386843807, guid: 9b7a23c75db2611498700632df5056f7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

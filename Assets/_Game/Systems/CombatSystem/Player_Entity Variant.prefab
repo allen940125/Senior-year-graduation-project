@@ -505,7 +505,7 @@ PrefabInstance:
     - target: {fileID: 1835490865948002528, guid: 1259d2d8075d20544b150bed05060312, type: 3}
       propertyPath: _blueprint
       value: 
-      objectReference: {fileID: 11400000, guid: d7500c1bae3a3ac4588bc16aa14f4679, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 2402921507230967744, guid: 1259d2d8075d20544b150bed05060312, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -685,6 +685,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatController2D
   smoothTime: 0.08
   staminaRegenDelay: 0.8
+  MoveSpeedMultiplier: 1
+  visualPivot: {fileID: 0}
 --- !u!114 &1664420855766335368
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -215,6 +215,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: PlayerButton
       objectReference: {fileID: 0}
+    - target: {fileID: 6421792317839229550, guid: f297860abed8db24d868ce783605d27d, type: 3}
+      propertyPath: _blueprint
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3453401802177198380, guid: f297860abed8db24d868ce783605d27d, type: 3}
     - {fileID: 8571213478823667387, guid: f297860abed8db24d868ce783605d27d, type: 3}

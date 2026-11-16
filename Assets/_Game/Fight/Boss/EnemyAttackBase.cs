@@ -20,8 +20,14 @@ public abstract class EnemyAttackBase : MonoBehaviour
             var core = boss.GetComponent<EntityCore>();
             if (core != null && core.RuntimeData != null)
             {
-                float finalAttack = core.RuntimeData.TotalAttackPower * damageMultiplier;
-                damageDealer.InjectSnapshot(finalAttack, core.RuntimeData.TotalCritRate, core.RuntimeData.TotalCritMultiplier, ignoreInvincibility);
+                // ★ 修改處：移除 Total 前綴，並透過 .Value 讀取 EntityAttribute 的最終計算值
+                float finalAttack = core.RuntimeData.AttackPower.Value * damageMultiplier;
+                damageDealer.InjectSnapshot(
+                    finalAttack, 
+                    core.RuntimeData.CritRate.Value, 
+                    core.RuntimeData.CritMultiplier.Value, 
+                    ignoreInvincibility
+                );
             }
         }
     }

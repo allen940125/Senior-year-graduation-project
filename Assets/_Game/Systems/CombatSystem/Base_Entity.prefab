@@ -173,6 +173,7 @@ MonoBehaviour:
     _currentHealth: 0
     _bonusAttackPower: 0
     _bonusDefense: 0
+    _moveSpeedMultiplier: 1
     _runtimeTraits: []
     CurrentState: 1
   references:
@@ -187,10 +188,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 799614136306252304}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a5618b6910a5c74e9d6b7ede2a5223c, type: 3}
+  m_Script: {fileID: 11500000, guid: 112d8efb2c7548f49a9bbd96ca25a708, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityHealthComponent
-  invincibilityDuration: 1.5
+  enableDebug: 0
   onTakeDamageVisuals:
     m_PersistentCalls:
       m_Calls:
@@ -222,6 +223,12 @@ MonoBehaviour:
   damageColor: {r: 1, g: 0, b: 0, a: 1}
   flashDuration: 0.15
   totalInvincibilityTime: 1.5
+  enableLowHealthFlash: 1
+  lowHealthThreshold: 0.3
+  lowHealthColor: {r: 1, g: 0.4, b: 0.4, a: 1}
+  lowHealthPulseSpeed: 4
+  bulletHoleEffectPrefab: {fileID: 0}
+  hitNormal: {x: 0, y: 0, z: -1}
 --- !u!1 &5445285325801324402
 GameObject:
   m_ObjectHideFlags: 0
