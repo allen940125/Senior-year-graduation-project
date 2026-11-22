@@ -1,4 +1,5 @@
 using GameFramework.Actors;
+using GameFramework.Actors.TopDown2D;
 using Gamemanager;
 using UnityEngine;
 
@@ -13,7 +14,8 @@ public class PlayerDeathHandler : MonoBehaviour
     {
         Debug.Log("Player is dead");
         // 專心處理玩家專屬的輸入剝奪與全域 UI 呼叫
-        GetComponent<PlayerCombatController2D>().enabled = false;
+        //GetComponent<PlayerCombatController2D>().enabled = false;
+        GetComponent<TopDownStateMachine>().enabled = false;
         GameManager.Instance.MainGameEvent.Send(new GameOverEvent());
         GameManager.Instance.GameOver();
     }

@@ -8,7 +8,7 @@
         "com.unity.inputsystem": "1.19.0",
         "com.unity.cinemachine": "3.1.7"
       },
-      "hash": "eccabddec66ff16990a109c14ad268103d2cb0e0"
+      "hash": "41acd0e45744825e15b32ee1e5ad75ebe6b4200d"
     },
     "com.esotericsoftware.spine.urp-shaders": {
       "version": "file:com.esotericsoftware.spine.urp-shaders-4.3-2019.1",

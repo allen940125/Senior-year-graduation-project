@@ -18,7 +18,7 @@ MonoBehaviour:
   defense: 3
   critRate: 0.2
   critMultiplier: 1.5
-  baseMoveSpeed: 5
+  baseMoveSpeed: 10
   damageInvincibilityDuration: 0.5
   traits:
   - rid: 5289023426527459
