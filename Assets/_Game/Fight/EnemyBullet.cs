@@ -140,12 +140,17 @@ public class EnemyBullet : EnemyAttackBase, IProjectile
             if (remainingDistance <= 0.0001f) break;
             Vector3 currentPos = transform.position;
 
+            // ★ 加在這裡：決定本次掃描要不要鎖死使用物件當下的旋轉 (Z=0)
+            Quaternion? overrideRot = (bulletData != null && !bulletData.alignRotationWithDirection)
+                ? transform.rotation
+                : (Quaternion?)null;
+
             // ==================================================
             // 1. 找牆壁 (★ 實體物理的唯一標準)
             // ==================================================
             int bounceHitCount = ShapeCastUtility.PerformCast(
                 currentPos, currentDirection, remainingDistance,
-                _hitBuffer, bulletData.bounceShape, bulletData.bounceLayer, enableDeepDebug);
+                _hitBuffer, bulletData.bounceShape, bulletData.bounceLayer, enableDeepDebug, overrideRot); // ★ 補上 overrideRot
             
             RaycastHit nearestWallHit = default;
             bool hasWallHit = false;
@@ -171,7 +176,7 @@ public class EnemyBullet : EnemyAttackBase, IProjectile
             // ==================================================
             int damageHitCount = ShapeCastUtility.PerformCast(
                 currentPos, currentDirection, remainingDistance,
-                _hitBuffer, bulletData.damageShape, bulletData.damageLayer, enableDeepDebug);
+                _hitBuffer, bulletData.damageShape, bulletData.damageLayer, enableDeepDebug, overrideRot); // ★ 補上 overrideRot
 
             if (damageHitCount > 0)
             {
@@ -204,31 +209,26 @@ public class EnemyBullet : EnemyAttackBase, IProjectile
             // ==================================================
             // 3. 移動與反彈結算
             // ==================================================
-            // 子彈瞬間走到決定好的位置
             transform.position = currentPos + currentDirection * travelDistance;
             remainingDistance -= travelDistance;
 
             if (hasWallHit)
             {
-                // 觸發相機震動
                 if (bulletData != null && bulletData.enableCameraShake && GameManager.Instance?.MainGameEvent != null)
                 {
                     GameManager.Instance.MainGameEvent.Send(new CameraShakeEvent { Intensity = bulletData.shakeIntensity, Duration = bulletData.shakeDuration });
                 }
 
-                // 處理反彈，並把子彈稍微推離牆壁一點點避免卡死
                 ProcessBounceTarget(nearestWallHit);
                 transform.position += currentDirection * COLLISION_SKIN;
                 remainingDistance = Mathf.Max(0f, remainingDistance - COLLISION_SKIN);
             }
             else
             {
-                // 沒撞到牆壁，已經走完所有距離，結束這幀的運算
                 break;
             }
         }
 
-        // 保證 Z 軸維持 0
         if (transform.position.z != 0f)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
@@ -253,8 +253,15 @@ public class EnemyBullet : EnemyAttackBase, IProjectile
 
     private void UpdateVelocityAndRotation()
     {
-        float angle = Mathf.Atan2(currentDirection.y, currentDirection.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        if (bulletData == null || bulletData.alignRotationWithDirection)
+        {
+            float angle = Mathf.Atan2(currentDirection.y, currentDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        }
+        else
+        {
+            transform.rotation = Quaternion.identity; // 強制維持 Z = 0
+        }
         _rb.linearVelocity = Vector3.zero;
     }
 

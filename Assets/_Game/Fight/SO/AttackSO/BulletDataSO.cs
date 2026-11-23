@@ -21,6 +21,10 @@ public class BulletDataSO : AttackDataSO
     [Range(0f, 60f)] public float maxBounceAngleJitter = 0f;
     public bool jitterFirstBounceOnly = false;
     
+    [Header("★ 旋轉控制")]
+    [Tooltip("勾選：物件與碰撞框自動朝向飛行方向；取消：維持自身旋轉 (Z=0)")]
+    public bool alignRotationWithDirection = true;
+    
     // ★ 實作預測軌跡 (把你原本寫在 TrajectoryVisualizer 裡面的長串迴圈搬過來)
     public override Vector3[] CalculatePredictedTrajectory(Vector3 startPos, Vector3 direction)
     {

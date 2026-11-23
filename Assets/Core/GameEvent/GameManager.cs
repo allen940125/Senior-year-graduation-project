@@ -44,6 +44,9 @@ public class GameManager : Singleton<GameManager>
     
     // 新增一個標記，防止重複初始化
     public bool IsInitialized { get; private set; } = false;
+    
+    // 放在 GameManager.cs 裡
+    public bool HasCompletedTutorialBattle { get; set; } = false;
 
     protected override void Awake()
     {

@@ -1,3 +1,4 @@
+using Game.SceneManagement;
 using Gamemanager;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private DialogueUIManager dialogueUI;
 
     [Header("流程開關")]
+    [Tooltip("★ 新增 1：勾選後，BattleManager 不會自動生怪跟開打，完全交給外部（如 TutorialManager）呼叫")]
+    public bool manualFlowControl = false;
+
     [Tooltip("勾選後開場會走對話；未勾選則直接進入戰鬥")]
     [SerializeField] private bool enableOpeningDialogue = false;
     [Tooltip("Yarn Spinner 開場對話節點名稱")]
@@ -22,6 +26,7 @@ public class BattleManager : MonoBehaviour
     public EntityBlueprintSO debugBossBlueprint;
 
     private BossStateMachine currentBoss;
+    public BossStateMachine CurrentBoss => currentBoss;
 
     private void Awake()
     {
@@ -35,22 +40,31 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeBoss();
+        // ★ 修改 1：如果是手動模式（新手教學），Start() 什麼都不做，等外部指揮
+        if (manualFlowControl) return;
+
+        InitializeDefaultBoss();
         StartCoroutine(EvaluateOpeningFlowRoutine());
+    }
+    
+    private void OnDestroy()
+    {
+        if (currentBoss != null)
+        {
+            currentBoss.OnPhaseEntered -= HandleBossPhaseEntered;
+        }
     }
 
     private System.Collections.IEnumerator EvaluateOpeningFlowRoutine()
     {
-        // ★ 核心修復：在單一場景測試時，等待大管家的非同步資料載入完成！
         if (GameManager.Instance != null)
         {
             while (!GameManager.Instance.IsInitialized)
             {
-                yield return null; // 如果資料還沒載完，就一直等
+                yield return null;
             }
         }
 
-        // 確保場景上所有剛 Instantiate 出來的物件都跑完了 Start()
         yield return null;
 
         if (enableOpeningDialogue && dialogueUI != null)
@@ -63,33 +77,12 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            // 大家都準備好了，資料庫也有了，再正式開打
             ChangeState(BattleState.PlayerFight);
         }
     }
 
-    /// <summary>
-    /// 評估開場流程：決定進入對話狀態還是直接進入開打狀態
-    /// </summary>
-    private void EvaluateOpeningFlow()
-    {
-        if (enableOpeningDialogue && dialogueUI != null)
-        {
-            ChangeState(BattleState.Dialogue);
-            dialogueUI.StartDialogue(openingDialogueNode, onComplete: () =>
-            {
-                // 對話結束後的回呼：正式切換到玩家開打狀態
-                ChangeState(BattleState.PlayerFight);
-            });
-        }
-        else
-        {
-            // 不需要對話，直接開打
-            ChangeState(BattleState.PlayerFight);
-        }
-    }
-
-    private void InitializeBoss()
+    // 原本的 InitializeBoss 改成只負責「抓預設資料」，真正生怪交給下面的 SpawnBoss
+    private void InitializeDefaultBoss()
     {
         EntityRuntime incomingData = GameFlowManager.PendingBattleEnemyData;
 
@@ -108,26 +101,55 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        if (incomingData.Blueprint == null || incomingData.Blueprint.battlePrefab == null)
+        SpawnBoss(incomingData);
+    }
+
+    /// <summary>
+    /// ★ 新增 2：公開的生怪方法。正式關卡跟新手教學都呼叫這個。
+    /// </summary>
+    public void SpawnBoss(EntityRuntime incomingData)
+    {
+        if (incomingData == null || incomingData.Blueprint == null || incomingData.Blueprint.battlePrefab == null)
         {
-            Debug.LogError("[BattleManager] Boss Blueprint 缺少戰鬥 Prefab！");
+            Debug.LogError("[BattleManager] Boss 資料或 Prefab 缺失！");
             return;
+        }
+
+        // 清理舊 BOSS 前，先解除它的事件訂閱
+        if (currentBoss != null)
+        {
+            currentBoss.OnPhaseEntered -= HandleBossPhaseEntered;
+            Destroy(currentBoss.gameObject);
         }
 
         GameObject bossObj = Instantiate(incomingData.Blueprint.battlePrefab, bossSpawnPoint.position, bossSpawnPoint.rotation);
         currentBoss = bossObj.GetComponent<BossStateMachine>();
-        
-        EntityCore bossCore = bossObj.GetComponent<EntityCore>();
-        if (bossCore != null)
+
+        if (currentBoss != null)
+        {
+            currentBoss.OnPhaseEntered += HandleBossPhaseEntered;
+        }
+
+        if (bossObj.TryGetComponent(out EntityCore bossCore))
         {
             bossCore.InjectRuntimeData(incomingData);
         }
-        else
-        {
-            Debug.LogError("[BattleManager] 生成的 Boss Prefab 身上缺少 EntityCore！");
-        }
     }
 
+    // ★ 核心防呆：只有在「非手動模式」下，BOSS 死亡才會自動判勝離場
+    private void HandleBossPhaseEntered(BossStateMachine.BossPhase phase)
+    {
+        if (phase != BossStateMachine.BossPhase.Dead) return;
+
+        if (manualFlowControl)
+        {
+            // 手動模式（如新手教學）：不自動結算，交給外部決定要換下一隻怪還是結束戰鬥
+            return;
+        }
+
+        ChangeState(BattleState.Win);
+    }
+    
     public void ChangeState(BattleState newState)
     {
         Debug.Log("[BattleManager] ChangeState: " + newState);
@@ -135,13 +157,11 @@ public class BattleManager : MonoBehaviour
         switch (currentState)
         {
             case BattleState.Dialogue:
-                // 可在此凍結玩家移動或 Boss 行為
                 Debug.Log("開始對話");
                 break;
 
             case BattleState.PlayerFight:
                 Debug.Log("開始戰鬥" + currentBoss.bossName);
-                // ★ 在這裡發送「開戰信號」
                 if (GameManager.Instance?.MainGameEvent != null)
                 {
                     GameManager.Instance.MainGameEvent.Send(new BattleInitiatedEvent());
@@ -152,6 +172,7 @@ public class BattleManager : MonoBehaviour
 
             case BattleState.Win:
                 Debug.Log("玩家獲勝！");
+                GameManager.Instance.SceneTransitionManager.LoadScene(SceneType.AdventureScene);
                 break;
 
             case BattleState.Lose:

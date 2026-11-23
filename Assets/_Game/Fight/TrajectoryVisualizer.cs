@@ -53,4 +53,11 @@ public class TrajectoryVisualizer : MonoBehaviour
     {
         if (_lineRenderer != null) _lineRenderer.enabled = false;
     }
+    
+    public void SetColor(Color color)
+    {
+        if (_lineRenderer == null) return;
+        _lineRenderer.startColor = color;
+        _lineRenderer.endColor = color;
+    }
 }

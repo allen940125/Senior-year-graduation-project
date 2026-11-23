@@ -15,7 +15,7 @@ MonoBehaviour:
   battlePrefab: {fileID: 0}
   maxHealth: 100
   attackPower: 20
-  defense: 3
+  defense: 30
   critRate: 0.2
   critMultiplier: 1.5
   baseMoveSpeed: 10

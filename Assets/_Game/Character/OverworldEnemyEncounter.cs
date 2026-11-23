@@ -19,52 +19,23 @@ public class OverworldEnemyEncounter : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // 1. 先確認物理引擎有沒有運作
-        Debug.Log($"[明雷怪] 發生碰撞！撞到我的物件是: {other.gameObject.name} (Tag: {other.tag})");
+        if (_hasTriggered) return;
 
-        // 2. 檢查是否已經觸發過
-        if (_hasTriggered)
-        {
-            Debug.Log("[明雷怪] 已經觸發過戰鬥，忽略此次碰撞。");
-            return;
-        }
+        // ★ 1. 判定是不是玩家（確保玩家物件的 Tag 有設為 Player）
+        if (!other.CompareTag("Player")) return;
 
-        // 3. 檢查大腦是否遺失
         if (_core == null)
         {
             Debug.LogError("[明雷怪] 致命錯誤：找不到 EntityCore！");
             return;
         }
 
-        Debug.Log("<color=green>[明雷怪] 確認是玩家！準備發送 StartBattleEvent！</color>");
         _hasTriggered = true;
-            
+
         GameManager.Instance.MainGameEvent.Send(new StartBattleEvent()
         {
-            EnemyData = _core.RuntimeData, 
+            EnemyData = _core.RuntimeData,
             BattleScene = battleScene
         });
-            
-        Debug.Log("<color=green>[明雷怪] 廣播發送完畢！</color>");
-        
-        // // 4. 檢查是不是玩家
-        // var playerCtrl = other.GetComponent<PlayerAdventureController>();
-        // if (playerCtrl != null)
-        // {
-        //     Debug.Log("<color=green>[明雷怪] 確認是玩家！準備發送 StartBattleEvent！</color>");
-        //     _hasTriggered = true;
-        //     
-        //     GameManager.Instance.MainGameEvent.Send(new StartBattleEvent()
-        //     {
-        //         EnemyData = _core.RuntimeData, 
-        //         BattleScene = battleScene
-        //     });
-        //     
-        //     Debug.Log("<color=green>[明雷怪] 廣播發送完畢！</color>");
-        // }
-        // else
-        // {
-        //     Debug.Log($"[明雷怪] 攔截：撞到的 {other.gameObject.name} 身上沒有 PlayerAdventureController 腳本。");
-        // }
     }
 }
