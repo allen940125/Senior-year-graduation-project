@@ -734,7 +734,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.297117, y: -0.74437994, z: 0}
-  m_LocalScale: {x: 1.9744015, y: 1.9922974, z: 1}
+  m_LocalScale: {x: 1.9731406, y: 1.9922974, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1493065282}
@@ -5097,13 +5097,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2382524369942867951, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
+      insertIndex: 8
+      addedObject: {fileID: 1781052935}
   m_SourcePrefab: {fileID: 100100000, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
 --- !u!4 &1781052933 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5711259275316127223, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
   m_PrefabInstance: {fileID: 1781052932}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1781052934 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2382524369942867951, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
+  m_PrefabInstance: {fileID: 1781052932}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1781052935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781052934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25b0423b2c7f4044bbe99ca722649475, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Allen.EntityGas::GameFramework.Actors.PlayerAbilityInputRouter
+  bindings:
+  - inputSlot: 3
+    ability: {fileID: 11400000, guid: a0436409cba330f468f3cbfa73d6d950, type: 2}
+    stopOnRelease: 0
 --- !u!4 &1781052936 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8026065375859013233, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
