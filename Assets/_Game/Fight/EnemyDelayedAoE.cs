@@ -18,8 +18,15 @@ public class EnemyDelayedAoE : EnemyAttackBase
         float finalMultiplier = (attackData != null) ? attackData.damageMultiplier * damageMultiplier : damageMultiplier;
         bool finalIgnore = (attackData != null && attackData.ignoreInvincibility) || ignoreInvincibility;
         base.Initialize(boss, finalMultiplier, finalIgnore);
+        if (ownerBoss != null) ownerBoss.RegisterActiveBullet(this.gameObject);
     }
 
+    // 新增 OnDestroy()：
+    private void OnDestroy()
+    {
+        if (ownerBoss != null) ownerBoss.UnregisterActiveBullet(this.gameObject);
+    }
+    
     // ★ 提供給 Animator Event 呼叫：只算傷害，不銷毀物件
     public void Explode()
     {
@@ -38,7 +45,7 @@ public class EnemyDelayedAoE : EnemyAttackBase
             transform.position, 
             transform.rotation, 
             _hitColliders, 
-            attackData.damageShape, 
+            GetEffectiveShape(attackData.damageShape),
             attackData.damageLayer
         );
 
@@ -66,7 +73,8 @@ public class EnemyDelayedAoE : EnemyAttackBase
     {
         if (attackData != null)
         {
-            attackData.damageShape.DrawGizmo(transform.position, transform.rotation, new Color(1f, 0.5f, 0f, 0.5f));
+            GetEffectiveShape(attackData.damageShape)
+                .DrawGizmo(transform.position, transform.rotation, new Color(1f, 0f, 0f, 0.4f));
         }
     }
 }

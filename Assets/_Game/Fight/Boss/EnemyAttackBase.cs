@@ -3,6 +3,10 @@ using UnityEngine;
 [RequireComponent(typeof(DamageDealer))]
 public abstract class EnemyAttackBase : MonoBehaviour
 {
+    [Header("★ 碰撞縮放設定")]
+    [Tooltip("勾選後，碰撞框會乘上物件自身的 Transform.lossyScale；取消則嚴格使用 SO 原始尺寸")]
+    [SerializeField] protected bool useTransformScale = false;
+
     protected DamageDealer damageDealer;
     protected BossStateMachine ownerBoss;
 
@@ -11,7 +15,6 @@ public abstract class EnemyAttackBase : MonoBehaviour
         damageDealer = GetComponent<DamageDealer>();
     }
 
-    // 只有純數值交割，沒有 direction，沒有 speed
     public virtual void Initialize(BossStateMachine boss, float damageMultiplier = 1f, bool ignoreInvincibility = false)
     {
         ownerBoss = boss;
@@ -20,7 +23,6 @@ public abstract class EnemyAttackBase : MonoBehaviour
             var core = boss.GetComponent<EntityCore>();
             if (core != null && core.RuntimeData != null)
             {
-                // ★ 修改處：移除 Total 前綴，並透過 .Value 讀取 EntityAttribute 的最終計算值
                 float finalAttack = core.RuntimeData.AttackPower.Value * damageMultiplier;
                 damageDealer.InjectSnapshot(
                     finalAttack, 
@@ -30,5 +32,13 @@ public abstract class EnemyAttackBase : MonoBehaviour
                 );
             }
         }
+    }
+
+    /// <summary>
+    /// 統一取得最終生效的碰撞形狀（自動依據開關決定是否套用縮放）
+    /// </summary>
+    protected CollisionShapeConfig GetEffectiveShape(CollisionShapeConfig rawShape)
+    {
+        return useTransformScale ? rawShape.GetScaled(transform.lossyScale) : rawShape;
     }
 }

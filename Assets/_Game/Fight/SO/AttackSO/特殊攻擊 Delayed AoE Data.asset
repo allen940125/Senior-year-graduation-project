@@ -20,9 +20,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8768
   damageShape:
-    shapeType: 0
+    shapeType: 1
     radius: 7.38
-    boxSize: {x: 0, y: 0}
+    boxSize: {x: 15, y: 15}
     capsuleLength: 0
     zThickness: 5
     shapeRotationOffset: {x: 0, y: 0, z: 0}
