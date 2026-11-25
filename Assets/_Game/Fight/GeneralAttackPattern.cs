@@ -264,23 +264,30 @@ public class GeneralAttackPattern : BulletSpawnerBase
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.green;
-        Matrix4x4 rotationMatrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-        Gizmos.matrix = rotationMatrix;
-        Gizmos.DrawWireCube(Vector3.zero, new Vector3(spawnAreaSize.x, spawnAreaSize.y, 0f));
+        Matrix4x4 oldMatrix = Gizmos.matrix;
+
+        // 1. 畫生成區域框（僅在需要區域的模式顯示，並修正你原本重複畫兩次的冗餘）
+        if (patternType == PatternType.RandomSpray ||
+            patternType == PatternType.RandomRain ||
+            patternType == PatternType.LinearLine ||
+            patternType == PatternType.BoxPerimeter)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, new Vector3(spawnAreaSize.x, spawnAreaSize.y, 0f));
+            Gizmos.matrix = oldMatrix;
+        }
 
         if (patternType == PatternType.Circle && circleRadius > 0f)
         {
             Gizmos.color = Color.cyan;
-            Gizmos.matrix = Matrix4x4.identity;
             Gizmos.DrawWireSphere(transform.position, circleRadius);
         }
 
         if (patternType == PatternType.Shotgun)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.matrix = Matrix4x4.identity;
-            Vector2 baseDir = aimAtPlayer ? Vector2.down : AngleToVector(fixedAngle);
+            Vector2 baseDir = aimAtPlayer ? GetDirToPlayer() : AngleToVector(fixedAngle);
             float baseAngle = Mathf.Atan2(baseDir.y, baseDir.x) * Mathf.Rad2Deg;
             float half = spreadAngle * 0.5f;
             Gizmos.DrawLine(transform.position, transform.position + (Vector3)(AngleToVector(baseAngle - half) * 2f));
@@ -290,20 +297,30 @@ public class GeneralAttackPattern : BulletSpawnerBase
         if (patternType == PatternType.Simple || patternType == PatternType.Sniper)
         {
             Gizmos.color = Color.magenta;
-            Gizmos.matrix = Matrix4x4.identity;
-            Vector3 dir = aimAtPlayer ? Vector3.down : (Vector3)AngleToVector(fixedAngle);
+            Vector3 dir = aimAtPlayer ? (Vector3)GetDirToPlayer() : (Vector3)AngleToVector(fixedAngle);
             Gizmos.DrawLine(transform.position, transform.position + dir * 2f);
         }
 
-        if (patternType == PatternType.RandomSpray ||
-            patternType == PatternType.RandomRain ||
-            patternType == PatternType.LinearLine ||
-            patternType == PatternType.BoxPerimeter)
+        // 2. 針對確定性陣型，直接畫出每顆子彈的真實碰撞紅框
+        if (bulletPrefab != null &&
+            patternType != PatternType.RandomSpray &&
+            patternType != PatternType.RandomRain)
         {
-            Gizmos.color = Color.green;
-            Matrix4x4 rangeMatrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-            Gizmos.matrix = rangeMatrix;
-            Gizmos.DrawWireCube(Vector3.zero, new Vector3(spawnAreaSize.x, spawnAreaSize.y, 0f));
+            bool hasShape = false;
+            CollisionShapeConfig shape = default;
+            if (bulletPrefab.TryGetComponent<EnemyAttackBase>(out var ea)) hasShape = ea.TryGetDamageShape(out shape);
+            else if (bulletPrefab.TryGetComponent<DamageCasterBase>(out var dc)) hasShape = dc.TryGetDamageShape(out shape);
+
+            if (hasShape)
+            {
+                var dataList = CalculateAllSpawnData();
+                Color hitColor = new Color(1f, 0.2f, 0.2f, 0.5f);
+                foreach (var data in dataList)
+                {
+                    Quaternion rot = Quaternion.Euler(0f, 0f, Mathf.Atan2(data.direction.y, data.direction.x) * Mathf.Rad2Deg - 90f);
+                    shape.DrawGizmo(data.position, rot, hitColor);
+                }
+            }
         }
     }
 }

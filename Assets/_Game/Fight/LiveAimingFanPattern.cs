@@ -220,4 +220,20 @@ public class LiveAimingFanPattern : AttackPatternBase
             CreatePreviewDummy(previewContainer, transform.position, AngleToVector(baseAngle + angleOffset), bulletPrefab);
         }
     }
+    
+    private void OnDrawGizmosSelected()
+    {
+        int count = Mathf.Max(1, bulletCount);
+        Vector2 centerDir = GetDirectionToTarget(FindPlayerTransform(), Vector2.down);
+        float baseAngle = Mathf.Atan2(centerDir.y, centerDir.x) * Mathf.Rad2Deg;
+
+        for (int i = 0; i < count; i++)
+        {
+            float angleOffset = (i - (count - 1) * 0.5f) * angleBetweenBullets;
+            Vector3 dir = AngleToVector(baseAngle + angleOffset);
+
+            Gizmos.color = (i == count / 2) ? lockedColor : trackingColor;
+            Gizmos.DrawLine(transform.position, transform.position + dir * aimLineLength);
+        }
+    }
 }

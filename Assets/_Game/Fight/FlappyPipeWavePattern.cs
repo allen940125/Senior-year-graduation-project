@@ -10,38 +10,32 @@ public class FlappyPipeWavePattern : AttackPatternBase
         CustomCurve
     }
 
-    [Header("水管 Prefab 與基礎數值")]
-    [SerializeField] private GameObject pipePrefab;
+    [Header("水管 Prefab 與基礎數值")] [SerializeField]
+    private GameObject pipePrefab;
+
     [SerializeField] private float baseSpeed = 6f;
     [SerializeField] private float patternDamageMultiplier = 1f;
-    [Tooltip("單根水管高度，需與 Prefab 一致")]
-    [SerializeField] private float singlePipeHeight = 15f;
 
-    [Header("波次與密度")]
-    [Min(1)] public int pipeCount = 10;
+    [Tooltip("單根水管高度，需與 Prefab 一致")] [SerializeField]
+    private float singlePipeHeight = 15f;
+
+    [Header("波次與密度")] [Min(1)] public int pipeCount = 10;
     [Min(0.5f)] public float pipeSpacing = 3.5f;
     public float gapHeight = 3.0f;
 
-    [Header("生成基準與方向")]
-    public Vector2 spawnOffset = new Vector2(10f, 0f);
+    [Header("生成基準與方向")] public Vector2 spawnOffset = new Vector2(10f, 0f);
     public Vector2 moveDirection = Vector2.left;
 
-    [Header("曲線與落差")]
-    [Header("曲線與落差")]
-    public CurveMode curveMode = CurveMode.SineWave; // ★ 補回這行
-    [Tooltip("缺口中心點上下擺動的最大範圍")]
-    public float maxAmplitudeY = 3.5f;
+    [Header("曲線與落差")] [Header("曲線與落差")] public CurveMode curveMode = CurveMode.SineWave; // ★ 補回這行
+    [Tooltip("缺口中心點上下擺動的最大範圍")] public float maxAmplitudeY = 3.5f;
 
-    [Header("SineWave")]
-    public float waveCycles = 1.5f;
+    [Header("SineWave")] public float waveCycles = 1.5f;
     public bool randomStartPhase = true;
 
-    [Header("ClampedRandomWalk")]
-    [Tooltip("相鄰兩組缺口的最大落差")]
+    [Header("ClampedRandomWalk")] [Tooltip("相鄰兩組缺口的最大落差")]
     public float maxStepDeltaY = 1.2f;
 
-    [Header("CustomCurve")]
-    [Tooltip("橫軸 0 到 1，縱軸乘上 maxAmplitudeY")]
+    [Header("CustomCurve")] [Tooltip("橫軸 0 到 1，縱軸乘上 maxAmplitudeY")]
     public AnimationCurve customCurve = AnimationCurve.EaseInOut(0f, -1f, 1f, 1f);
 
     protected override void OnExecute(BossStateMachine boss, float speedMultiplier, bool isAngry)
@@ -114,6 +108,7 @@ public class FlappyPipeWavePattern : AttackPatternBase
                         float delta = Random.Range(-Mathf.Max(0f, maxStepDeltaY), Mathf.Max(0f, maxStepDeltaY));
                         currentY = Mathf.Clamp(currentY + delta, -maxAmplitudeY, maxAmplitudeY);
                     }
+
                     offsets[i] = currentY;
                     break;
 
@@ -143,6 +138,22 @@ public class FlappyPipeWavePattern : AttackPatternBase
 
     protected override void OnGeneratePreview(Transform previewContainer)
     {
+        if (pipePrefab == null) return;
+
+        int count = Mathf.Max(1, pipeCount);
+        Vector3 baseCenter = transform.position + (Vector3)spawnOffset;
+        Vector3 dir = moveDirection.sqrMagnitude > 0.001f ? (Vector3)moveDirection.normalized : Vector3.left;
+        float offsetFromGapCenter = gapHeight * 0.5f + singlePipeHeight * 0.5f;
+
+        for (int i = 0; i < count; i++)
+        {
+            float t = count > 1 ? (float)i / (count - 1) : 0f;
+            float offsetY = EvaluatePreviewOffsetY(t);
+
+            Vector3 gapCenter = baseCenter + dir * (i * pipeSpacing) + Vector3.up * offsetY;
+            CreatePreviewDummy(previewContainer, gapCenter + Vector3.up * offsetFromGapCenter, dir, pipePrefab);
+            CreatePreviewDummy(previewContainer, gapCenter - Vector3.up * offsetFromGapCenter, dir, pipePrefab);
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -153,25 +164,49 @@ public class FlappyPipeWavePattern : AttackPatternBase
         Gizmos.color = new Color(1f, 1f, 0f, 0.35f);
         Gizmos.DrawWireCube(baseCenter, new Vector3(0.5f, maxAmplitudeY * 2f + gapHeight, 0f));
 
-        Gizmos.color = Color.cyan;
-        Vector3 prevPoint = Vector3.zero;
+        bool hasPipeShape = false;
+        CollisionShapeConfig pipeShape = default;
+        if (pipePrefab != null)
+        {
+            if (pipePrefab.TryGetComponent<EnemyAttackBase>(out var ea))
+                hasPipeShape = ea.TryGetDamageShape(out pipeShape);
+            else if (pipePrefab.TryGetComponent<DamageCasterBase>(out var dc))
+                hasPipeShape = dc.TryGetDamageShape(out pipeShape);
+        }
 
+        float offsetFromGapCenter = gapHeight * 0.5f + singlePipeHeight * 0.5f;
+        Vector3 prevPoint = Vector3.zero;
         int previewCount = Mathf.Max(1, pipeCount);
+
         for (int i = 0; i < previewCount; i++)
         {
             float t = previewCount > 1 ? (float)i / (previewCount - 1) : 0f;
-            float offsetY = 0f;
-
-            if (curveMode == CurveMode.SineWave)
-                offsetY = Mathf.Sin(t * waveCycles * Mathf.PI * 2f) * maxAmplitudeY;
-            else if (curveMode == CurveMode.CustomCurve)
-                offsetY = customCurve.Evaluate(t) * maxAmplitudeY;
+            float offsetY = EvaluatePreviewOffsetY(t);
 
             Vector3 gapCenter = baseCenter + dir * (i * pipeSpacing) + Vector3.up * offsetY;
-            Gizmos.DrawWireCube(gapCenter, new Vector3(0.6f, gapHeight, 0f));
 
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireCube(gapCenter, new Vector3(0.6f, gapHeight, 0f));
             if (i > 0) Gizmos.DrawLine(prevPoint, gapCenter);
             prevPoint = gapCenter;
+
+            // 畫出上下兩根水管的真實碰撞紅框
+            if (hasPipeShape)
+            {
+                Quaternion rot = pipePrefab.transform.rotation;
+                Color pipeColor = new Color(1f, 0.2f, 0.2f, 0.5f);
+                pipeShape.DrawGizmo(gapCenter + Vector3.up * offsetFromGapCenter, rot, pipeColor);
+                pipeShape.DrawGizmo(gapCenter - Vector3.up * offsetFromGapCenter, rot, pipeColor);
+            }
         }
+    }
+
+    private float EvaluatePreviewOffsetY(float t)
+    {
+        if (curveMode == CurveMode.SineWave)
+            return Mathf.Sin(t * waveCycles * Mathf.PI * 2f) * maxAmplitudeY;
+        if (curveMode == CurveMode.CustomCurve)
+            return customCurve.Evaluate(t) * maxAmplitudeY;
+        return 0f;
     }
 }

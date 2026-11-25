@@ -440,6 +440,7 @@ public abstract class BossStateMachine : MonoBehaviour
             if (nextWave.patternPrefab != null)
             {
                 GameObject patternObj = Instantiate(nextWave.patternPrefab, firePosition.position, Quaternion.identity);
+                RegisterActivePattern(patternObj);
                 if (patternObj.TryGetComponent(out AttackPatternBase patternScript))
                 {
                     patternScript.Execute(this, 1.0f, true);

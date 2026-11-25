@@ -7,6 +7,8 @@ public abstract class EnemyAttackBase : MonoBehaviour
     [Tooltip("勾選後，碰撞框會乘上物件自身的 Transform.lossyScale；取消則嚴格使用 SO 原始尺寸")]
     [SerializeField] protected bool useTransformScale = false;
 
+    protected abstract AttackDataSO BaseAttackData { get; }
+    
     protected DamageDealer damageDealer;
     protected BossStateMachine ownerBoss;
 
@@ -47,7 +49,13 @@ public abstract class EnemyAttackBase : MonoBehaviour
     /// </summary>
     public virtual bool TryGetDamageShape(out CollisionShapeConfig shape)
     {
-        shape = default;
-        return false;
+        if (BaseAttackData == null)
+        {
+            shape = default;
+            return false;
+        }
+
+        shape = GetEffectiveShape(BaseAttackData.damageShape);
+        return true;
     }
 }

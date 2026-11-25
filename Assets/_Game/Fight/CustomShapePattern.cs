@@ -37,21 +37,6 @@ public class CustomShapePattern : BulletSpawnerBase // ★ 修正：改繼承 Bu
         Debug.Log($"已抓取 {spawnPoints.Count} 個生成點！");
     }
 
-    // --- 編輯器視覺化：在 Scene 視窗畫出預覽點與方向線 ---
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-        foreach (Transform point in spawnPoints)
-        {
-            if (point != null)
-            {
-                Gizmos.DrawSphere(point.position, 0.2f);
-                Vector3 dir = GetDirection(point);
-                Gizmos.DrawLine(point.position, point.position + dir * 1.5f);
-            }
-        }
-    }
-
     // ==========================================
     // ★ 實作 BulletSpawnerBase 的抽象方法：只算數學！
     // ==========================================
@@ -93,6 +78,60 @@ public class CustomShapePattern : BulletSpawnerBase // ★ 修正：改繼承 Bu
         Debug.Log($"<color=cyan>[預覽成功]</color> CustomShapePattern 畫出 {dataList.Count} 個發射點。");
     }
 
+    // --- 編輯器視覺化：在 Scene 視窗畫出預覽點與方向線 ---
+    private void OnDrawGizmos()
+    {
+        bool hasShape = false;
+        CollisionShapeConfig shape = default;
+        bool shouldAlignWithDirection = true;
+
+        if (bulletPrefab != null)
+        {
+            if (bulletPrefab.TryGetComponent<EnemyAttackBase>(out var enemyAttack))
+            {
+                hasShape = enemyAttack.TryGetDamageShape(out shape);
+            }
+            else if (bulletPrefab.TryGetComponent<DamageCasterBase>(out var damageCaster))
+            {
+                hasShape = damageCaster.TryGetDamageShape(out shape);
+            }
+
+            bool isProjectile = bulletPrefab.TryGetComponent<IProjectile>(out _);
+            if (!isProjectile)
+            {
+                shouldAlignWithDirection = false;
+            }
+            else if (bulletPrefab.TryGetComponent<EnemyBullet>(out var enemyBullet) &&
+                     enemyBullet.bulletData != null &&
+                     !enemyBullet.bulletData.alignRotationWithDirection)
+            {
+                shouldAlignWithDirection = false;
+            }
+        }
+
+        foreach (Transform point in spawnPoints)
+        {
+            if (point == null) continue;
+
+            Vector3 dir = GetDirection(point);
+
+            // 中心點與方向線
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(point.position, 0.2f);
+            Gizmos.DrawLine(point.position, point.position + dir * 1.5f);
+
+            // 真實碰撞框（紅色線框）
+            if (hasShape)
+            {
+                Quaternion baseRot = shouldAlignWithDirection && dir.sqrMagnitude > 0.0001f
+                    ? Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg - 90f)
+                    : bulletPrefab.transform.rotation;
+
+                shape.DrawGizmo(point.position, baseRot, new Color(1f, 0.2f, 0.2f, 0.7f));
+            }
+        }
+    }
+    
     // ==========================================
     // Debug 測試：直接呼叫基底 Execute
     // ==========================================

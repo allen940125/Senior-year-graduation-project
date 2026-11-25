@@ -5,7 +5,8 @@ public class EnemyDelayedAoE : EnemyAttackBase
 {
     [Header("★ 攻擊資料配置")]
     [SerializeField] private DelayedAoEDataSO attackData;
-
+    protected override AttackDataSO BaseAttackData => attackData;
+    
     [Header("★ 嚴格傷害追蹤 (Debug)")]
     [Tooltip("開啟後，會印出從『掃描』到『扣血』的完整過程，幫你抓出誰沒吃到傷害")]
     [SerializeField] private bool enableDamageDebug = false;

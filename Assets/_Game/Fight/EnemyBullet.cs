@@ -25,6 +25,7 @@ public class EnemyBullet : EnemyAttackBase, IProjectile
 
     [Header("★ 碰撞形狀設定")]
     public BulletDataSO bulletData;
+    protected override AttackDataSO BaseAttackData => bulletData;
 
     [Header("★ 嚴格除錯模式")]
     [Tooltip("打勾後，會在 Console 印出每一幀子彈撞到了什麼、Tag 是什麼")]

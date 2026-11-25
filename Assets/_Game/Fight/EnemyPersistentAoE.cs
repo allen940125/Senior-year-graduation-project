@@ -5,7 +5,8 @@ public class EnemyPersistentAoE : EnemyAttackBase
 {
     [Header("★ 攻擊資料配置")]
     [SerializeField] private AttackDataSO attackData;
-
+    protected override AttackDataSO BaseAttackData => attackData;
+    
     [Header("★ 持續時間設定")]
     [Tooltip("大於 0：時間到自動銷毀；小於等於 0：常駐直到 Boss 階段結束清空")]
     [SerializeField] private float lifeTime = 5f;
