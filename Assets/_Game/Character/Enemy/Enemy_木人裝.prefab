@@ -214,6 +214,7 @@ GameObject:
   - component: {fileID: 6765935621440539412}
   - component: {fileID: 5442447739557394286}
   - component: {fileID: 6711851928096927710}
+  - component: {fileID: 7063611852894552830}
   m_Layer: 7
   m_Name: "Enemy_\u6728\u4EBA\u88DD"
   m_TagString: Boss
@@ -333,12 +334,6 @@ MonoBehaviour:
   transitionDuration: 1.5
   attackPhaseDuration: 12
   phaseConfigs:
-  - label: 
-    healthThreshold: 0
-    waveList:
-    - note: 
-      patternPrefab: {fileID: 4989275966189868475, guid: 6006eebd93aecaa40b242ec0a53b44bd, type: 3}
-      delayBeforeNext: 0
   - label: 
     healthThreshold: 0
     waveList:
@@ -586,6 +581,24 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: ed54aa686ad88b14d84bb1f0cf8837dd, type: 3}
   repeatCount: 0
   interval: -1
+--- !u!114 &7063611852894552830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992103494201206248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2740cdf44014ccd4ab6ac17546297e86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossAnimationPresenter
+  animator: {fileID: 0}
+  healthComponent: {fileID: 0}
+  transitionDuration: 0.05
+  idleState: Idle
+  hitState: Hit
+  dieState: Die
 --- !u!1 &2865839645750683603
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +609,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1069268050442303423}
   - component: {fileID: 7460276033251100507}
+  - component: {fileID: 993770455884822718}
   m_Layer: 0
   m_Name: Boss-Idle_0
   m_TagString: Untagged
@@ -677,6 +691,28 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!95 &993770455884822718
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2865839645750683603}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c8d5aebfd67e68649a936308cc46b99b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4478290565785337126
 GameObject:
   m_ObjectHideFlags: 0

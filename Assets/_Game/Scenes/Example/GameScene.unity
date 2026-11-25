@@ -1077,10 +1077,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8646368430223423122, guid: 5ab97544bbe0bbc44b16d0a8f48e2e44, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1996,6 +1992,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1630128575821445075, guid: 7a7d1ee6c4db4f9408a8550e2b295467, type: 3}
   m_PrefabInstance: {fileID: 536081159}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &600793563 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2382524369942867951, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
+  m_PrefabInstance: {fileID: 1781052932}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &657330878 stripped
 Transform:
@@ -6050,7 +6051,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2382524369942867951, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1781052952}
   m_SourcePrefab: {fileID: 100100000, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
 --- !u!4 &1781052933 stripped
 Transform:
@@ -6062,6 +6066,29 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 6780597422445579805, guid: ff8df279864c5214f9fce9bcdcd44d60, type: 3}
   m_PrefabInstance: {fileID: 1781052932}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1781052952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600793563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6900fbb4f9f15224794cf171d956ea99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TopDownAnimationPresenter
+  animController: {fileID: 0}
+  stateMachine: {fileID: 0}
+  healthComponent: {fileID: 0}
+  moveThreshold: 0.1
+  transitionDuration: 0.05
+  idleState: Idle
+  walkSideState: Walk
+  walkUpState: WalkUp
+  walkDownState: WalkDown
+  hitState: Hit
+  dieState: Die
 --- !u!1 &1796668555
 GameObject:
   m_ObjectHideFlags: 0
@@ -6087,7 +6114,7 @@ Transform:
   m_GameObject: {fileID: 1796668555}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: -0.5, y: 4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
