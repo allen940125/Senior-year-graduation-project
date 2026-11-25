@@ -55,7 +55,7 @@ public class FlappyPipePattern : BulletSpawnerBase
         var dataList = CalculateAllSpawnData();
         foreach (var data in dataList)
         {
-            CreatePreviewDummy(previewContainer, data.position, data.direction);
+            CreatePreviewDummy(previewContainer, data.position, data.direction, bulletPrefab);
         }
     }
 

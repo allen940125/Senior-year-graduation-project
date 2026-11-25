@@ -208,7 +208,8 @@ public class LiveAimingFanPattern : AttackPatternBase
         for (int i = 0; i < bulletCount; i++)
         {
             float angleOffset = (i - (bulletCount - 1) * 0.5f) * angleBetweenBullets;
-            CreatePreviewDummy(previewContainer, transform.position, AngleToVector(baseAngle + angleOffset));
+            // ★ 補上傳入 bulletPrefab
+            CreatePreviewDummy(previewContainer, transform.position, AngleToVector(baseAngle + angleOffset), bulletPrefab);
         }
     }
 }

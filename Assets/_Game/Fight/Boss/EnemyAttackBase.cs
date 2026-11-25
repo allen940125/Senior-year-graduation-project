@@ -41,4 +41,13 @@ public abstract class EnemyAttackBase : MonoBehaviour
     {
         return useTransformScale ? rawShape.GetScaled(transform.lossyScale) : rawShape;
     }
+
+    /// <summary>
+    /// 供外部發射器或預覽系統讀取真實傷害碰撞形狀
+    /// </summary>
+    public virtual bool TryGetDamageShape(out CollisionShapeConfig shape)
+    {
+        shape = default;
+        return false;
+    }
 }

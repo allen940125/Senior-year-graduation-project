@@ -98,32 +98,101 @@ public abstract class AttackPatternBase : MonoBehaviour
             DestroyImmediate(oldContainer.gameObject); 
         }
     }
-
-    /// <summary>
-    /// 強迫所有子類別實作：你該如何畫出你的預覽軌跡？
-    /// </summary>
+    
     protected abstract void OnGeneratePreview(Transform previewContainer);
 
     /// <summary>
-    /// ★ 共用工具：給子類別呼叫，用來生成一個「長條形的假子彈」來指示位置與方向
+    /// ★ 共用工具：依傳入的 Prefab 真實碰撞形狀與尺寸生成預覽幾何體
     /// </summary>
-    protected void CreatePreviewDummy(Transform container, Vector3 position, Vector3 direction)
+    protected void CreatePreviewDummy(Transform container, Vector3 position, Vector3 direction, GameObject sourcePrefab = null)
     {
-        // 創建一個內建的 Cube
-        GameObject dummy = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        dummy.name = "Preview Bullet";
+        PrimitiveType primitiveType = PrimitiveType.Cube;
+        Vector3 dummyScale = new Vector3(0.1f, 0.4f, 0.1f);
+        Quaternion shapeOffsetRot = Quaternion.identity;
+        bool shouldAlignWithDirection = true;
+
+        if (sourcePrefab != null)
+        {
+            // 1. 判斷是否該跟著飛行方向旋轉
+            // 非投射物（如 AoE）或明確關閉自動旋轉的子彈（如水管），預覽維持原姿態
+            bool isProjectile = sourcePrefab.TryGetComponent<IProjectile>(out _);
+            if (!isProjectile)
+            {
+                shouldAlignWithDirection = false;
+            }
+            else if (sourcePrefab.TryGetComponent<EnemyBullet>(out var enemyBullet) &&
+                     enemyBullet.bulletData != null &&
+                     !enemyBullet.bulletData.alignRotationWithDirection)
+            {
+                shouldAlignWithDirection = false;
+            }
+
+            // 2. 優先讀取真實碰撞形狀與尺寸
+            if (TryExtractDamageShape(sourcePrefab, out CollisionShapeConfig shape))
+            {
+                shapeOffsetRot = Quaternion.Euler(shape.shapeRotationOffset);
+                float zDepth = shape.zThickness > 0f ? shape.zThickness : 0.2f;
+
+                switch (shape.shapeType)
+                {
+                    case BulletShapeType.Box:
+                        primitiveType = PrimitiveType.Cube;
+                        dummyScale = new Vector3(shape.boxSize.x, shape.boxSize.y, zDepth);
+                        break;
+
+                    case BulletShapeType.Circle:
+                        primitiveType = PrimitiveType.Sphere;
+                        float diameter = shape.radius * 2f;
+                        dummyScale = new Vector3(diameter, diameter, zDepth);
+                        break;
+
+                    case BulletShapeType.Capsule:
+                        primitiveType = PrimitiveType.Capsule;
+                        // Unity 內建 Capsule 預設直徑為 1、總高為 2，因此 Y 軸縮放需乘以 0.5
+                        float capDiameter = shape.radius * 2f;
+                        float capHeight = Mathf.Max(capDiameter, shape.capsuleLength);
+                        dummyScale = new Vector3(capDiameter, capHeight * 0.5f, capDiameter);
+                        break;
+                }
+            }
+            else
+            {
+                // 3. 若無碰撞資料，退回使用 Prefab 自身的縮放
+                dummyScale = sourcePrefab.transform.localScale;
+            }
+        }
+
+        GameObject dummy = GameObject.CreatePrimitive(primitiveType);
+        dummy.name = sourcePrefab != null ? $"Preview ({sourcePrefab.name})" : "Preview Bullet";
         dummy.transform.SetParent(container);
         dummy.transform.position = position;
-        
-        // 壓扁變成長條狀，像雷射或箭頭
-        dummy.transform.localScale = new Vector3(0.1f, 0.4f, 0.1f);
+        dummy.transform.localScale = dummyScale;
 
-        // 旋轉指向方向 (2D Z軸旋轉)
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        dummy.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+        Quaternion baseRot = shouldAlignWithDirection && direction.sqrMagnitude > 0.0001f
+            ? Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f)
+            : (sourcePrefab != null ? sourcePrefab.transform.rotation : Quaternion.identity);
 
-        // 把 Collider 刪掉，避免干擾你在 Editor 點擊其他東西
+        dummy.transform.rotation = baseRot * shapeOffsetRot;
+
         DestroyImmediate(dummy.GetComponent<Collider>());
+    }
+
+    private bool TryExtractDamageShape(GameObject prefab, out CollisionShapeConfig shape)
+    {
+        if (prefab.TryGetComponent<EnemyAttackBase>(out var enemyAttack) &&
+            enemyAttack.TryGetDamageShape(out shape))
+        {
+            return true;
+        }
+
+        if (prefab.TryGetComponent<DamageCasterBase>(out var damageCaster) &&
+            damageCaster.TryGetDamageShape(out shape))
+        {
+            return true;
+        }
+
+        shape = default;
+        return false;
     }
     
     // 定義一個標準資料包，用來鎖死「算出來的位置與方向」

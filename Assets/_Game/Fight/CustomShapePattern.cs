@@ -87,7 +87,7 @@ public class CustomShapePattern : BulletSpawnerBase // ★ 修正：改繼承 Bu
 
         foreach (var data in dataList)
         {
-            CreatePreviewDummy(previewContainer, data.position, data.direction);
+            CreatePreviewDummy(previewContainer, data.position, data.direction, bulletPrefab);
         }
 
         Debug.Log($"<color=cyan>[預覽成功]</color> CustomShapePattern 畫出 {dataList.Count} 個發射點。");

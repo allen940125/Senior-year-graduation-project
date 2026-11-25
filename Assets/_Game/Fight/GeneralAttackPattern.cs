@@ -264,7 +264,7 @@ public class GeneralAttackPattern : BulletSpawnerBase
         var dataList = CalculateAllSpawnData();
         foreach (var data in dataList)
         {
-            CreatePreviewDummy(previewContainer, data.position, data.direction);
+            CreatePreviewDummy(previewContainer, data.position, data.direction, bulletPrefab);
         }
         Debug.Log($"<color=cyan>[預覽成功]</color> 共 {dataList.Count} 顆預覽假彈。");
     }
