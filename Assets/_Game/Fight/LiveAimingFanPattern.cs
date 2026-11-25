@@ -4,31 +4,30 @@ using UnityEngine;
 
 public class LiveAimingFanPattern : AttackPatternBase
 {
-    [Header("★ 子彈與速度設定")]
+    [Header("子彈與速度")]
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private float baseSpeed = 12f;
     [SerializeField] private float patternDamageMultiplier = 1f;
 
-    [Header("★ 連發設定（設 1 為單次齊射，>1 為依序連發）")]
+    [Header("連發設定")]
     [Min(1)] public int burstCount = 1;
     [Tooltip("每一發之間的間隔秒數")]
     public float burstInterval = 0.25f;
-    
-    [Header("★ 逆命 Q 扇形設定（設 1 就是單發狙擊）")]
+
+    [Header("扇形設定")]
     [Min(1)] public int bulletCount = 3;
-    [Tooltip("相鄰兩發子彈的固定夾角（例如 3 發配 15 度 = -15, 0, +15）")]
+    [Tooltip("相鄰子彈的夾角")]
     public float angleBetweenBullets = 15f;
 
-    [Header("★ 實時瞄準與鎖定時間")]
+    [Header("實時瞄準")]
     [Tooltip("持續追蹤玩家的秒數")]
     public float trackDuration = 1.2f;
-    [Tooltip("鎖定方向不再追蹤、準備開火的緩衝秒數（設 0 則追蹤完立刻發射）")]
+    [Tooltip("鎖定方向後等待開火的秒數")]
     public float lockDuration = 0.3f;
 
-    [Header("★ 瞄準射線視覺設定")]
-    [Tooltip("預警射線 Prefab（需掛載 TrajectoryVisualizer）")]
+    [Header("瞄準射線")]
     [SerializeField] private TrajectoryVisualizer visualizerPrefab;
-    [Tooltip("勾選後只顯示正中央瞄準玩家的單條射線，不顯示兩側偏移射線")]
+    [Tooltip("只顯示正中央瞄準射線")]
     public bool onlyShowCenterAimLine = false;
     [SerializeField] private float aimLineLength = 25f;
     [SerializeField] private Color trackingColor = new Color(1f, 0.2f, 0.2f, 0.5f);
@@ -39,12 +38,16 @@ public class LiveAimingFanPattern : AttackPatternBase
     protected override void OnExecute(BossStateMachine boss, float speedMultiplier, bool isAngry)
     {
         transform.SetParent(null);
-        if (boss != null) boss.RegisterActivePattern(this.gameObject);
 
         float finalSpeed = baseSpeed * speedMultiplier;
         if (isAngry) finalSpeed *= 1.5f;
 
         StartCoroutine(RunAimAndFireRoutine(boss, finalSpeed));
+    }
+
+    protected override void OnPatternCleanup()
+    {
+        ClearAimLines();
     }
 
     private IEnumerator RunAimAndFireRoutine(BossStateMachine boss, float speed)
@@ -56,16 +59,18 @@ public class LiveAimingFanPattern : AttackPatternBase
             yield break;
         }
 
+        burstCount = Mathf.Max(1, burstCount);
+        bulletCount = Mathf.Max(1, bulletCount);
+
         Transform playerTransform = FindPlayerTransform();
         CreateAimLines();
 
         Vector2 currentAimDir = GetDirectionToTarget(playerTransform, Vector2.down);
 
-        // 階段 1：實時追蹤玩家
         float timer = 0f;
         SetLinesColor(trackingColor);
 
-        while (timer < trackDuration)
+        while (timer < Mathf.Max(0f, trackDuration))
         {
             currentAimDir = GetDirectionToTarget(playerTransform, currentAimDir);
             UpdateAimLines(currentAimDir);
@@ -74,7 +79,6 @@ public class LiveAimingFanPattern : AttackPatternBase
             yield return null;
         }
 
-        // 階段 2：鎖定方向
         if (lockDuration > 0f)
         {
             SetLinesColor(lockedColor);
@@ -82,7 +86,6 @@ public class LiveAimingFanPattern : AttackPatternBase
             yield return new WaitForSeconds(lockDuration);
         }
 
-        // 階段 3：關閉射線並開火（支援單次齊射或依序連發）
         ClearAimLines();
 
         float baseAngle = Mathf.Atan2(currentAimDir.y, currentAimDir.x) * Mathf.Rad2Deg;
@@ -96,7 +99,6 @@ public class LiveAimingFanPattern : AttackPatternBase
                 SpawnSingleBullet(boss, transform.position, fireDir, speed);
             }
 
-            // 最後一波打完不用再等，直接結束
             if (b < burstCount - 1 && burstInterval > 0f)
             {
                 yield return new WaitForSeconds(burstInterval);
@@ -124,27 +126,26 @@ public class LiveAimingFanPattern : AttackPatternBase
         if (_spawnedVisualizers.Count == 0) return;
 
         float baseAngle = Mathf.Atan2(centerDir.y, centerDir.x) * Mathf.Rad2Deg;
-        Vector3 startPos = new Vector3(transform.position.x, transform.position.y, 0f);
+        Vector3 startPos = transform.position;
         bulletPrefab.TryGetComponent<EnemyBullet>(out var bulletComp);
 
         for (int i = 0; i < _spawnedVisualizers.Count; i++)
         {
             if (_spawnedVisualizers[i] == null) continue;
 
-            // 勾選只顯示中心線時，強制偏移 0 度（直接瞄準中心方向）
             float angleOffset = onlyShowCenterAimLine
                 ? 0f
                 : (i - (bulletCount - 1) * 0.5f) * angleBetweenBullets;
 
             Vector3 dir = AngleToVector(baseAngle + angleOffset);
 
-            Vector3[] points = (bulletComp != null && bulletComp.bulletData != null)
+            Vector3[] points = bulletComp != null && bulletComp.bulletData != null
                 ? bulletComp.bulletData.CalculatePredictedTrajectory(startPos, dir)
                 : null;
 
             if (points == null || points.Length < 2)
             {
-                points = new Vector3[] { startPos, startPos + dir * aimLineLength };
+                points = new[] { startPos, startPos + dir * aimLineLength };
             }
 
             _spawnedVisualizers[i].DrawTrajectory(points);
@@ -153,17 +154,23 @@ public class LiveAimingFanPattern : AttackPatternBase
 
     private void SetLinesColor(Color color)
     {
-        foreach (var vis in _spawnedVisualizers)
+        foreach (var visualizer in _spawnedVisualizers)
         {
-            if (vis != null) vis.SetColor(color);
+            if (visualizer != null)
+            {
+                visualizer.SetColor(color);
+            }
         }
     }
 
     private void ClearAimLines()
     {
-        foreach (var vis in _spawnedVisualizers)
+        foreach (var visualizer in _spawnedVisualizers)
         {
-            if (vis != null) Destroy(vis.gameObject);
+            if (visualizer != null)
+            {
+                Destroy(visualizer.gameObject);
+            }
         }
         _spawnedVisualizers.Clear();
     }
@@ -204,11 +211,12 @@ public class LiveAimingFanPattern : AttackPatternBase
 
     protected override void OnGeneratePreview(Transform previewContainer)
     {
+        bulletCount = Mathf.Max(1, bulletCount);
         float baseAngle = -90f;
+
         for (int i = 0; i < bulletCount; i++)
         {
             float angleOffset = (i - (bulletCount - 1) * 0.5f) * angleBetweenBullets;
-            // ★ 補上傳入 bulletPrefab
             CreatePreviewDummy(previewContainer, transform.position, AngleToVector(baseAngle + angleOffset), bulletPrefab);
         }
     }
