@@ -408,30 +408,54 @@ public abstract class BossStateMachine : MonoBehaviour
     /// </summary>
     public void ApplyPhaseConfig(int index)
     {
-        if (index < 0 || index >= phaseConfigs.Count)
+        if (phaseConfigs == null || index < 0 || index >= phaseConfigs.Count)
         {
-            Debug.LogError($"[邏輯錯誤] 嘗試載入無效的波次索引: {index}。陣列大小為: {phaseConfigs.Count}");
+            Debug.LogError($"[邏輯錯誤] 嘗試載入無效的波次索引: {index}。phaseConfigs={(phaseConfigs == null ? "null" : phaseConfigs.Count.ToString())}");
             return;
         }
 
         BossPhaseConfig config = phaseConfigs[index];
 
         _waveQueue.Clear();
-        foreach (var wave in config.waveList) 
+        int skippedNullPrefabCount = 0;
+        string firstValidPrefabName = "<none>";
+
+        if (config.waveList != null)
         {
-            _waveQueue.Enqueue(wave);
+            for (int i = 0; i < config.waveList.Count; i++)
+            {
+                BulletWaveData wave = config.waveList[i];
+                if (wave.patternPrefab == null)
+                {
+                    skippedNullPrefabCount++;
+                    Debug.LogWarning($"[{bossName}] 波次 {config.label} (Index:{index}) 的第 {i} 筆 wave 缺少 patternPrefab，已跳過。", this);
+                    continue;
+                }
+
+                if (firstValidPrefabName == "<none>")
+                {
+                    firstValidPrefabName = wave.patternPrefab.name;
+                }
+
+                _waveQueue.Enqueue(wave);
+            }
         }
 
         _activeBullets.Clear();
         _activePatterns.Clear();
         _waveDelayTimer = 0f;
-    
-        Debug.Log($"<color=cyan>[{bossName}] 載入攻擊波次: {config.label} (Index: {index}) 攻擊預製件名稱: {config.waveList[0].patternPrefab.name}</color>");
+
+        if (_waveQueue.Count == 0)
+        {
+            Debug.LogWarning($"[{bossName}] 載入波次 {config.label} (Index:{index}) 後沒有可用 wave。原始數量={(config.waveList == null ? 0 : config.waveList.Count)}，空 Prefab 數量={skippedNullPrefabCount}。", this);
+            return;
+        }
+
+        Debug.Log($"<color=cyan>[{bossName}] 載入攻擊波次: {config.label} (Index:{index}) 首個有效預製件: {firstValidPrefabName}，有效波數: {_waveQueue.Count}，跳過空 Prefab: {skippedNullPrefabCount}</color>");
     }
     
     private void ExecuteAttackSequence()
     {
-        //if (_activeBullets.Count > 0 || _activePatterns.Count > 0) return;
         if (_waveDelayTimer > 0) { _waveDelayTimer -= Time.deltaTime; return; }
 
         if (_waveQueue.Count > 0)
@@ -440,12 +464,16 @@ public abstract class BossStateMachine : MonoBehaviour
             if (nextWave.patternPrefab != null)
             {
                 GameObject patternObj = Instantiate(nextWave.patternPrefab, firePosition.position, Quaternion.identity);
-                RegisterActivePattern(patternObj);
                 if (patternObj.TryGetComponent(out AttackPatternBase patternScript))
                 {
                     patternScript.Execute(this, 1.0f, true);
                 }
             }
+            else
+            {
+                Debug.LogWarning($"[{bossName}] 取出的 wave 缺少 patternPrefab，已略過。", this);
+            }
+
             _waveDelayTimer = nextWave.delayBeforeNext;
         }
     }

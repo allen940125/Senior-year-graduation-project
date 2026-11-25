@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 4379214604229113282}
   - component: {fileID: 4079885799143001451}
   - component: {fileID: 3538824483145337242}
-  - component: {fileID: 4631411528473053403}
+  - component: {fileID: 8481866992980583906}
   - component: {fileID: 3590738851750285873}
   m_Layer: 0
   m_Name: "\u5F37\u5236\u9694\u96E2"
@@ -253,7 +253,7 @@ MonoBehaviour:
   _snapshottedDamage: 30
   _snapshottedCritRate: 0
   _snapshottedCritMultiplier: 1.5
---- !u!114 &4631411528473053403
+--- !u!114 &8481866992980583906
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -262,12 +262,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 8406468819089139672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 190e9a35fe7fdfe438ca4a8b2bd7881e, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ce5565f104b7384d8675634eb4626e2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyDelayedAoE
-  useTransformScale: 1
-  attackData: {fileID: 11400000, guid: 0a2e6a384db9ebd47b5f6e140d07105c, type: 2}
-  enableDamageDebug: 0
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPersistentAoE
+  useTransformScale: 0
+  attackData: {fileID: 11400000, guid: e0064a0de869f0443a102806bfc95350, type: 2}
+  lifeTime: 0
+  activeDelay: 0
 --- !u!95 &3590738851750285873
 Animator:
   serializedVersion: 7
@@ -276,7 +277,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8406468819089139672}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ab834754314cb924095dd169644339ba, type: 2}
   m_CullingMode: 0

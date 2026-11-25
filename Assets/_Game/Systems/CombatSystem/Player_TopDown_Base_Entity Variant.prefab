@@ -97,6 +97,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2976255189297598195, guid: 5ecb71ddc4716ac4da5b7e92e692591a, type: 3}
+      propertyPath: visualRoot
+      value: 
+      objectReference: {fileID: 8026065375859013233}
+    - target: {fileID: 2976255189297598195, guid: 5ecb71ddc4716ac4da5b7e92e692591a, type: 3}
       propertyPath: faceLeftAngle
       value: 0
       objectReference: {fileID: 0}
